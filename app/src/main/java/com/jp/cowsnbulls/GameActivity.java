@@ -36,7 +36,7 @@ public class GameActivity extends Activity {
 	TextView tv_d_1,tv_d_2,tv_d_3,tv_d_4,tv_bulls;
 	LinearLayout rl_feed;
 	RelativeLayout rl_body;
-	ImageButton i_reload,i_scores, i_menu;
+	ImageButton i_reload,i_scores, i_menu, i_mute;
 	SQLiteDatabase db_scoreinfo=null;	
 	Random r;
 	String[] rno=new String[4];
@@ -48,7 +48,7 @@ public class GameActivity extends Activity {
 	int cows=0;
 	int least_score_yet;
 	String[] bg = {"#ef5350","#ba68c8","#29b6f6","#43a047","#9ccc65","#ffa000","#8d6e63","#ff6701","#546e7a"};
-	boolean distinct=true,cont;
+	boolean distinct=true, cont, notmute=true;
 	SharedPreferences sp;
 	private  static final String PREFS_FILE = "com.jp.cowsnbulls.preferences";
 	SharedPreferences.Editor ed;
@@ -58,9 +58,13 @@ public class GameActivity extends Activity {
 	int no_games;
 	float avg_mpg;
 	MediaPlayer music;
-	String random_jargon[]= {"inject *ex.bch /hes","ACCESS DENIED","lst lan0 -verify",
+	String random_jargon[]= {"inject *ex.bch /hes","Access Denied","lst lan0 -verify",
 			"remconn 13.48.33.75:3909", "netstat -t 00:24", "kill PID 2040",
-			"brute thread initiated"};
+			"brute force initiated", "Permission denied", "wait for callback", "security breach detected",
+			"initiating security protocols", "system failure, rebooting.", "kill PID 4335 - force",
+			"recieved beacon","warhead on track", "latitute:49.4412931, longitude: 1.0740453", "eta: 12 min",
+			"system malfunction", "send beacon: 14.212.33.75:5509"
+	};
 
 	@Override
 	protected void onResume() {
@@ -106,80 +110,72 @@ public class GameActivity extends Activity {
 		i_reload = (ImageButton) findViewById(R.id.i_reload);
 		i_scores = (ImageButton) findViewById(R.id.i_scores);
 		i_menu = (ImageButton) findViewById(R.id.i_menu);
+		i_mute = (ImageButton) findViewById(R.id.i_mute);
 
 		Button done = (Button) findViewById(R.id.new_game);
 
 
 
-		// Lock Digits
-		tv_d_2.setOnLongClickListener(new View.OnLongClickListener(){
-			public boolean onLongClick(View arg0) {
-				if(tv_d_2.isEnabled()==true)
-				{
-					tv_d_2.setBackgroundResource(R.drawable.bg_lock);
-					tv_d_2.setEnabled(false);
-
-				}
-				else
-				{
-					tv_d_2.setBackgroundResource(R.drawable.bg);
-					tv_d_2.setEnabled(true);
-				}
-
-				return false;
-			}
-		});
-
-		tv_d_3.setOnLongClickListener(new View.OnLongClickListener(){
-			public boolean onLongClick(View arg0) {
-				if(tv_d_3.isEnabled())
-				{
-					tv_d_3.setBackgroundResource(R.drawable.bg_lock);
-					tv_d_3.setEnabled(false);
-				}
-				else
-				{
-					tv_d_3.setBackgroundResource(R.drawable.bg);
-					tv_d_3.setEnabled(true);
-				}
-
-				return true;
-			}
-		});
-
-		tv_d_4.setOnLongClickListener(new View.OnLongClickListener(){
-			public boolean onLongClick(View arg0) {
-				if(tv_d_4.isEnabled())
-				{
-					tv_d_4.setBackgroundResource(R.drawable.bg_lock);
-					tv_d_4.setEnabled(false);
-				}
-				else
-				{
-					tv_d_4.setBackgroundResource(R.drawable.bg);
-					tv_d_4.setEnabled(true);
-				}
-
-				return true;
-			}
-		});
-
-		tv_d_1.setOnLongClickListener(new View.OnLongClickListener(){
-			public boolean onLongClick(View arg0) {
-				if(tv_d_1.isEnabled())
-				{
-					tv_d_1.setBackgroundResource(R.drawable.bg_lock);
-					tv_d_1.setEnabled(false);
-				}
-				else
-				{
-					tv_d_1.setBackgroundResource(R.drawable.bg);
-					tv_d_1.setEnabled(true);
-				}
-
-				return false;
-			}
-		});
+//		// Lock Digits
+//		tv_d_2.setOnLongClickListener(new View.OnLongClickListener(){
+//			public boolean onLongClick(View arg0) {
+//				if(tv_d_2.isEnabled()==true)
+//				{
+//					tv_d_2.setBackgroundResource(R.drawable.bg_lock);
+//					tv_d_2.setEnabled(false);
+//
+//				}
+//				else
+//				{
+//					tv_d_2.setBackgroundResource(R.drawable.bg);
+//					tv_d_2.setEnabled(true);
+//				}
+//
+//				return false;
+//			}
+//		});
+//
+//		tv_d_3.setOnLongClickListener(new View.OnLongClickListener() {
+//			public boolean onLongClick(View arg0) {
+//				if (tv_d_3.isEnabled()) {
+//					tv_d_3.setBackgroundResource(R.drawable.bg_lock);
+//					tv_d_3.setEnabled(false);
+//				} else {
+//					tv_d_3.setBackgroundResource(R.drawable.bg);
+//					tv_d_3.setEnabled(true);
+//				}
+//
+//				return true;
+//			}
+//		});
+//
+//		tv_d_4.setOnLongClickListener(new View.OnLongClickListener() {
+//			public boolean onLongClick(View arg0) {
+//				if (tv_d_4.isEnabled()) {
+//					tv_d_4.setBackgroundResource(R.drawable.bg_lock);
+//					tv_d_4.setEnabled(false);
+//				} else {
+//					tv_d_4.setBackgroundResource(R.drawable.bg);
+//					tv_d_4.setEnabled(true);
+//				}
+//
+//				return true;
+//			}
+//		});
+//
+//		tv_d_1.setOnLongClickListener(new View.OnLongClickListener() {
+//			public boolean onLongClick(View arg0) {github
+//				if (tv_d_1.isEnabled()) {
+//					tv_d_1.setBackgroundResource(R.drawable.bg_lock);
+//					tv_d_1.setEnabled(false);
+//				} else {
+//					tv_d_1.setBackgroundResource(R.drawable.bg);
+//					tv_d_1.setEnabled(true);
+//				}
+//
+//				return false;
+//			}
+//		});
 
 		// Change Focus
 		tv_d_1.addTextChangedListener(new TextWatcher() {
@@ -261,17 +257,17 @@ public class GameActivity extends Activity {
 		tv_d_4.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
+									  int count) {
 				// TODO Auto-generated method stub
-				if(tv_d_4.getText().length()!=0)
-				tv_d_1.requestFocus();
+				if (tv_d_4.getText().length() != 0)
+					tv_d_1.requestFocus();
 
 
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
+										  int after) {
 				// TODO Auto-generated method stub
 
 			}
@@ -322,6 +318,20 @@ public class GameActivity extends Activity {
 			public void onClick(View v) {
 
 				finish();
+
+			}
+
+		});
+
+
+		i_mute.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				if(notmute){
+					music.release();
+					notmute = false;
+
+					i_mute.setVisibility(View.INVISIBLE);
+				}
 
 			}
 
@@ -417,7 +427,7 @@ public class GameActivity extends Activity {
 
 						tv_bulls.setText("Hits: " + String.valueOf(bulls) + "         Clicks: " + String.valueOf(cows));
 						Random r1 = new Random();
-						int r_int = r1.nextInt(6);
+						int r_int = r1.nextInt(19);
 						long l_int = r1.nextInt(1000000000);
 
 						final TextView row1 = new TextView(getBaseContext());
@@ -454,7 +464,7 @@ public class GameActivity extends Activity {
 
 							//Update stats
 							no_games++;
-							avg_mpg = (avg_mpg*no_games + feed_count)/no_games;
+							avg_mpg = (avg_mpg*(no_games-1) + feed_count)/no_games;
 							ed.putFloat("MPG", avg_mpg);
 							ed.putInt("GAMES", no_games);
 							ed.commit();
@@ -463,7 +473,7 @@ public class GameActivity extends Activity {
 							{
 								ed.putInt(HIGHSCORE, feed_count);
 								ed.commit();
-								tv_bulls.setText("You have outdone yourself Agent B!. New Record!");
+								tv_bulls.setText("You are the best, Agent B!");
 							}
 						}
 					}

@@ -21,6 +21,7 @@
         <activity
             android:name="com.jp.cowsnbulls.LandingActivity"
             android:label="@string/title_activity_landing"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

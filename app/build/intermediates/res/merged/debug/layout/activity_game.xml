@@ -49,7 +49,8 @@
                         android:inputType="number"
                         android:maxLength="1"
                         android:textColor="#111"
-                        android:textSize="30sp" />
+                        android:textSize="30sp"
+                        android:textColorHint="#ddd"/>
 
                     <EditText
                         android:id="@+id/d_2"
@@ -64,7 +65,8 @@
                         android:inputType="number"
                         android:maxLength="1"
                         android:textColor="#111"
-                        android:textSize="30sp" />
+                        android:textSize="30sp"
+                        android:textColorHint="#ddd"/>
 
                     <EditText
                         android:id="@+id/d_1"
@@ -78,7 +80,8 @@
                         android:inputType="number"
                         android:maxLength="1"
                         android:textColor="#111"
-                        android:textSize="30sp" >
+                        android:textSize="30sp"
+                        android:textColorHint="#ddd">
 
                         <requestFocus />
                     </EditText>
@@ -95,7 +98,8 @@
                         android:inputType="number"
                         android:maxLength="1"
                         android:textColor="#111"
-                        android:textSize="30sp" />
+                        android:textSize="30sp"
+                        android:textColorHint="#ddd"/>
                 </RelativeLayout>
 
                 <Button
@@ -189,6 +193,16 @@
                 android:layout_margin="10dp"
                 android:layout_toLeftOf="@+id/i_reload"
                 android:background="@drawable/scores" />
+
+            <ImageButton
+                android:id="@+id/i_mute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/mute"
+                android:layout_marginRight="10dp"
+                android:layout_alignBottom="@+id/i_scores"
+                android:layout_toLeftOf="@+id/i_scores"
+                android:layout_toStartOf="@+id/i_scores"/>
         </RelativeLayout>
     </RelativeLayout>
 
