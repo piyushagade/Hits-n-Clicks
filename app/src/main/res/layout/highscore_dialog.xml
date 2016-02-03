@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_root"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/oval"
+        android:layout_margin="15dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:layout_centerHorizontal="true">
+
+
+    <TextView
+        android:id="@+id/add_timer_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Highscore"
+        android:textSize="11pt"
+        android:textColor="#6f6f6f"
+        android:layout_marginTop="10dp"
+        android:typeface="sans"
+        android:layout_centerHorizontal="true" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rl3"
+        android:layout_below="@+id/add_timer_title"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Least moves yet:"
+            android:id="@+id/tv1"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textSize="9dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="300"
+            android:id="@+id/highscore"
+            android:layout_below="@+id/tv1"
+            android:layout_marginTop="0dp"
+            android:layout_centerHorizontal="true"
+            android:textSize="70dp"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

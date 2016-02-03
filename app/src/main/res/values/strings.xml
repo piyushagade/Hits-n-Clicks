@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Hits \'n Clicks</string>
+    <string name="title_activity_landing">Hits \'n Clicks</string>
+    <string name="about">Welcome Agent B! A nuclear missile is headed towards a major city in eastern Europe. Your objective is to recover a 4 digit PIN to access the Nuclear Launch console and disable the warhead.\n \nLuckily, Agent Q gave you one of his code breakers. Use it to find the code in as less moves as possible Agent B! \n \nWhen you enter your guess, a response will identify the number of correct digits that are in the PIN but in wrong positions and the number of correct digits in their correct positions as "Clicks" and "Hits" respectively. \nThe world\'s future is in you hands Agent B!  \n \nP.S.: The milk in Accounting departments fridge has gone bad. Bring a gallon when you are done. And please see if its fat-free.\n \nAgent D out.</string>
+
+</resources>
