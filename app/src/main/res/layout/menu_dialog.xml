@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_root"
+                android:orientation="vertical"
+                android:padding="10sp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/blank"
+        android:layout_margin="15sp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:layout_centerHorizontal="true"
+    android:id="@+id/relativeLayout3">
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rl3"
+        android:layout_centerHorizontal="true">
+
+    </RelativeLayout>
+
+</RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Menu"
+            android:id="@+id/menu_title"
+            android:textSize="56sp"
+            android:typeface="monospace"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+<ScrollView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/menu_title">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Back To Mission"
+            android:layout_marginTop="20sp"
+            android:id="@+id/resume"
+            android:textSize="22sp"
+            android:textColor="#AAFFFFFF"
+            android:typeface="monospace"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Forfeit Mission"
+            android:id="@+id/quit"
+            android:textColor="#AAFFFFFF"
+            android:layout_marginTop="20sp"
+            android:textSize="22sp"
+            android:typeface="monospace"
+            android:layout_below="@+id/resume"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Mission Briefing"
+            android:id="@+id/objective"
+            android:textColor="#AAFFFFFF"
+            android:layout_marginTop="20sp"
+            android:textSize="22sp"
+            android:typeface="monospace"
+            android:layout_below="@+id/quit"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Switch Console View"
+            android:id="@+id/layout"
+            android:textColor="#AAFFFFFF"
+            android:layout_marginTop="40sp"
+            android:textSize="16sp"
+            android:typeface="monospace"
+            android:layout_below="@+id/objective"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="----"
+            android:id="@+id/layout_selected"
+            android:textColor="#AAFFFFFF"
+            android:layout_marginTop="2sp"
+            android:textSize="12sp"
+            android:typeface="monospace"
+            android:layout_below="@+id/layout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Switch Input Method"
+            android:id="@+id/input"
+            android:textColor="#AAFFFFFF"
+            android:layout_marginTop="20sp"
+            android:textSize="16sp"
+            android:typeface="monospace"
+            android:layout_below="@+id/layout_selected"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="----"
+            android:id="@+id/input_selected"
+            android:textColor="#AAFFFFFF"
+            android:layout_marginTop="2sp"
+            android:textSize="12sp"
+            android:typeface="monospace"
+            android:layout_below="@+id/input"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Switch Theme"
+            android:id="@+id/theme"
+            android:textColor="#AAFFFFFF"
+            android:layout_marginTop="20sp"
+            android:textSize="16sp"
+            android:typeface="monospace"
+            android:layout_below="@+id/input_selected"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="----"
+            android:id="@+id/theme_selected"
+            android:textColor="#AAFFFFFF"
+            android:layout_marginTop="2sp"
+            android:textSize="12sp"
+            android:typeface="monospace"
+            android:layout_below="@+id/theme"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+    </RelativeLayout>
+
+</ScrollView>
+
+        <com.jp.cowsnbulls.Typewriter
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/menu_notification"
+            android:textSize="12dp"
+            android:layout_alignParentBottom="true"
+            android:typeface="monospace"
+            android:gravity="left"
+            android:layout_alignParentLeft="true"/>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

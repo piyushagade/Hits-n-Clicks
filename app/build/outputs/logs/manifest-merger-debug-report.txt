@@ -6,7 +6,7 @@ ADDED from C:\Users\Piyush Agade\Workspaces\AS\Cows'nBulls\app\src\main\AndroidM
 		INJECTED from C:\Users\Piyush Agade\Workspaces\AS\Cows'nBulls\app\src\main\AndroidManifest.xml
 		INJECTED from C:\Users\Piyush Agade\Workspaces\AS\Cows'nBulls\app\src\main\AndroidManifest.xml
 	android:versionName
-		ADDED from C:\Users\Piyush Agade\Workspaces\AS\Cows'nBulls\app\src\main\AndroidManifest.xml:5:5-30
+		ADDED from C:\Users\Piyush Agade\Workspaces\AS\Cows'nBulls\app\src\main\AndroidManifest.xml:5:5-33
 	android:versionCode
 		ADDED from C:\Users\Piyush Agade\Workspaces\AS\Cows'nBulls\app\src\main\AndroidManifest.xml:4:5-28
 		INJECTED from C:\Users\Piyush Agade\Workspaces\AS\Cows'nBulls\app\src\main\AndroidManifest.xml

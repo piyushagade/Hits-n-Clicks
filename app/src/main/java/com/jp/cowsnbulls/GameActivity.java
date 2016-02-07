@@ -1,64 +1,103 @@
 package com.jp.cowsnbulls;
 
-import java.util.Random;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ActionMenuView;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class GameActivity extends Activity {
+import com.jp.cowsnbulls.SimpleGestureFilter.SimpleGestureListener;
 
-	private static final String HIGHSCORE = "highscore";
-	String d_1,d_2,d_3,d_4;
-	TextView tv_d_1,tv_d_2,tv_d_3,tv_d_4,tv_bulls;
+import java.util.Calendar;
+import java.util.Random;
+
+public class GameActivity extends Activity implements SimpleGestureListener{
+
+	private static final CharSequence RESTART_TEXT = "INCOMING TRANSMISSION\n\nPlease reload to apply changes, press the 'reload' icon in the in-game menu." +
+			"\nCAUTION: Reloading will restart the game." ;
+	ScrollView sv;
+    int tv_d = 1;
+	TextView tv_d_1,tv_d_2,tv_d_3,tv_d_4;
+    TextView p_1;
+
+	int menu_ID;
+
+	Typewriter tv_bulls, tw_bg;
 	LinearLayout rl_feed;
-	RelativeLayout rl_body;
-	ImageButton i_reload,i_scores, i_menu, i_mute;
-	SQLiteDatabase db_scoreinfo=null;	
-	Random r;
+	RelativeLayout rl_body, rl_bg;
+
+	String temp_inputmethod="", temp_layout="";
+	private String l_selected = "";
+	boolean t_selected = false;
+
+	ImageButton i_reload,i_scores, i_menu, i_mute, i_help;
+
+    Random r;
 	String[] rno=new String[4];
 	String[] uip=new String[4];
-	int bg_index;
-	int blank;
+
+    int bg_index;
 	int feed_count=0;
 	int bulls=0;
 	int cows=0;
-	int least_score_yet;
-	String[] bg = {"#ef5350","#ba68c8","#29b6f6","#43a047","#9ccc65","#ffa000","#8d6e63","#ff6701","#546e7a"};
-	boolean distinct=true, cont, notmute=true;
-	SharedPreferences sp;
-	private  static final String PREFS_FILE = "com.jp.cowsnbulls.preferences";
-	SharedPreferences.Editor ed;
-	int leastMoves;
+
+    String[] bg = {"#ef5350","#ba68c8","#29b6f6","#43a047","#9ccc65","#ffa000","#8d6e63","#ff6701","#546e7a"};
+
+    boolean distinct=true, cont, notmute=true, restartPending = false;
+
+    SharedPreferences sp_stats, sp_prefs;
+
+    private  static final String STATS_FILE = "com.jp.cowsnbulls.stats";
+    private  static final String PREFS_FILE = "com.jp.cowsnbulls.preferences";
+
+    SharedPreferences.Editor ed, ed_pref;
+
+    Button kp_0,kp_1,kp_2,kp_3,kp_4,kp_5,kp_6,kp_7,kp_8,kp_9,kp_decrypt;
+	LinearLayout ll_kp;
+
+	int accent;
+
+    int leastMoves;
 	TextView d_highscore;
-	Button d_okay;
+	SeekBar sb;
+    Dialog menu, report_dialog, training_dialog;
+    Dialog brief_dialog;
+    Button done;
 	int no_games;
 	float avg_mpg;
 	MediaPlayer music;
-	String random_jargon[]= {"inject *ex.bch /hes","Access Denied","lst lan0 -verify",
+    Animation blinkAnim;
+	CardView console;
+
+    int layoutID;
+    String inputMethod;
+    boolean darkTheme = false;
+
+    String random_jargon[]= {"inject *ex.bch /hes","Access Denied","lst lan0 -verify",
 			"remconn 13.48.33.75:3909", "netstat -t 00:24", "kill PID 2040",
 			"brute force initiated", "Permission denied", "wait for callback", "security breach detected",
 			"initiating security protocols", "system failure, rebooting.", "kill PID 4335 - force",
@@ -66,12 +105,53 @@ public class GameActivity extends Activity {
 			"system malfunction", "send beacon: 14.212.33.75:5509"
 	};
 
+    RelativeLayout c1, c2, c3, c4;
+
+    private SimpleGestureFilter detector;
+
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent me){
+        if(inputMethod.equals("slider"))
+			detector.onTouchEvent(me);
+		return super.dispatchTouchEvent(me);
+	}
+
+
+	@Override
+	public void onSwipe(int direction) {
+
+		switch (direction) {
+
+			case SimpleGestureFilter.SWIPE_RIGHT : if(tv_d == 4) tv_d = 0;
+				activateTv(++tv_d, 1);
+				break;
+			case SimpleGestureFilter.SWIPE_LEFT : if(tv_d == 1) tv_d = 5;
+                activateTv(--tv_d, 1);
+				break;
+			case SimpleGestureFilter.SWIPE_DOWN :
+				break;
+			case SimpleGestureFilter.SWIPE_UP :
+				break;
+
+		}
+	}
+
+	@Override
+	public void onDoubleTap() {
+		decrypt();
+	}
+
 	@Override
 	protected void onResume() {
 		// Set Background Music
-		music = MediaPlayer.create(GameActivity.this, R.raw.a);
-		music.setLooping(true);
-		music.start();
+
+			music = MediaPlayer.create(GameActivity.this, R.raw.a);
+			music.setLooping(true);
+
+		if(notmute) {
+			music.start();
+		}
 		super.onResume();
 	}
 
@@ -79,41 +159,174 @@ public class GameActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		music.release();
+
+		menu.show();
+		defineMenu();
 	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+
+    @Override
+    public void onBackPressed() {
+		menu.show();
+		defineMenu();
+	}
+
+    @Override
+	protected void onCreate(final Bundle savedInstanceState) {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_game);
+        sp_stats = getSharedPreferences(STATS_FILE, 0);
+        sp_prefs = getSharedPreferences(PREFS_FILE, 0);
 
-		tv_d_1 = (TextView) findViewById(R.id.d_1);
-		tv_d_2 = (TextView) findViewById(R.id.d_2);
-		tv_d_3 = (TextView) findViewById(R.id.d_3);
-		tv_d_4 = (TextView) findViewById(R.id.d_4);
-		tv_bulls = (TextView)findViewById(R.id.tv_bulls);
+        ed = sp_stats.edit();
+        ed_pref = sp_prefs.edit();
 
-		sp = getSharedPreferences(PREFS_FILE, 0);
-//		sp =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		ed = sp.edit();
+        // Get Shared Preferences Preferences
+        layoutID=sp_prefs.getInt("layoutID", 2);   // Default set to Bottom Console
+        inputMethod=sp_prefs.getString("inputMethod", "keypad");  // Default set to Keypad
+        darkTheme=sp_prefs.getBoolean("themeID", true);  // Default set to dark theme
 
-		leastMoves = sp.getInt(HIGHSCORE, 10000);
-		no_games = sp.getInt("GAMES", 0);
-		avg_mpg = sp.getFloat("MPG", 0);
+        // Set Layout
+        int layoutResId = 0;
+        if(layoutID==1) {
+            if(inputMethod.equals("slider")) layoutResId = R.layout.game_layout_1_slider;
+            if(inputMethod.equals("keyboard")) layoutResId = R.layout.game_layout_1_keyboard;
+            if(inputMethod.equals("keypad")) layoutResId = R.layout.game_layout_1_keypad;
+        } else if(layoutID==2) {
+            if(inputMethod.equals("slider")) layoutResId = R.layout.game_layout_2_slider;
+            if(inputMethod.equals("keyboard")) layoutResId = R.layout.game_layout_2_keyboard;
+            if(inputMethod.equals("keypad")) layoutResId = R.layout.game_layout_2_keypad;
+        }
+
+        setContentView(layoutResId);
+
+		c1 = (RelativeLayout) findViewById(R.id.cur1);
+		c2 = (RelativeLayout) findViewById(R.id.cur2);
+		c3 = (RelativeLayout) findViewById(R.id.cur3);
+		c4 = (RelativeLayout) findViewById(R.id.cur4);
+
+        sv = (ScrollView) findViewById(R.id.sv_feed);
+
+		tv_bulls = (Typewriter) findViewById(R.id.tv_bulls);
+		tw_bg = (Typewriter) findViewById(R.id.tw_bg);
+		tw_bg.setTextSize(8);
+		tw_bg.setAlpha(0.2f);
+
+		tw_bg.setCharacterDelay(1);
+		String t = getResources().getString(R.string.tw_bg);
+		tw_bg.animateText(t);
+
+        if(inputMethod.equals("slider")) {
+            tv_d_1 = (TextView) findViewById(R.id.d_1);
+            tv_d_2 = (TextView) findViewById(R.id.d_2);
+            tv_d_3 = (TextView) findViewById(R.id.d_3);
+            tv_d_4 = (TextView) findViewById(R.id.d_4);
+            sb = (SeekBar) findViewById(R.id.slider);
+        }
+
+        if(inputMethod.equals("keypad")) {
+            tv_d_1 = (TextView) findViewById(R.id.d_1);
+            tv_d_2 = (TextView) findViewById(R.id.d_2);
+            tv_d_3 = (TextView) findViewById(R.id.d_3);
+            tv_d_4 = (TextView) findViewById(R.id.d_4);
+            kp_0 = (Button) findViewById(R.id.kp_0);
+            kp_1 = (Button) findViewById(R.id.kp_1);
+            kp_2 = (Button) findViewById(R.id.kp_2);
+            kp_3 = (Button) findViewById(R.id.kp_3);
+            kp_4 = (Button) findViewById(R.id.kp_4);
+            kp_5 = (Button) findViewById(R.id.kp_5);
+            kp_6 = (Button) findViewById(R.id.kp_6);
+            kp_7 = (Button) findViewById(R.id.kp_7);
+            kp_8 = (Button) findViewById(R.id.kp_8);
+            kp_9 = (Button) findViewById(R.id.kp_9);
+            kp_decrypt = (Button) findViewById(R.id.kp_decrypt);
+			ll_kp = (LinearLayout) findViewById(R.id.ll_kp);
+        }
+
+        else if(inputMethod.equals("keyboard")){
+            tv_d_1 = (EditText) findViewById(R.id.d_1);
+            tv_d_2 = (EditText) findViewById(R.id.d_2);
+            tv_d_3 = (EditText) findViewById(R.id.d_3);
+            tv_d_4 = (EditText) findViewById(R.id.d_4);
+            done = (Button) findViewById(R.id.decrypt);
+        }
+
+        p_1 = (TextView) findViewById(R.id.pointer1);
+
+        //Slider Listener
+        if(inputMethod.equals("slider"))
+		sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+										  boolean fromUser) {
+				// TODO Auto-generated method stub
+                switch (tv_d){
+                    case 1: tv_d_1.setText(Integer.toString(progress));
+                        break;
+                    case 2: tv_d_2.setText(Integer.toString(progress));
+                        break;
+                    case 3: tv_d_3.setText(Integer.toString(progress));
+                        break;
+                    case 4: tv_d_4.setText(Integer.toString(progress));
+                        break;
+                }
+
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+                int progress = seekBar.getProgress();
+
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				switch (tv_d){
+					case 1: activateTv(2, 1);
+						break;
+					case 2: activateTv(3, 1);
+						break;
+					case 3: activateTv(4, 1);
+						break;
+					case 4: activateTv(1, 1);
+						break;
+				}
+			}
+
+		});
+
+        if(inputMethod.equals("keyboard"))
+            done.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    decrypt();
+                }
+            });
+
+        // Read Shared Preferences Statistics
+		leastMoves = sp_stats.getInt("highscore", 10000);
+		no_games = sp_stats.getInt("GAMES", 0);
+		avg_mpg = sp_stats.getFloat("MPG", 0);
 
 		rl_feed = (LinearLayout) findViewById(R.id.ll_feed);
 		rl_body = (RelativeLayout) findViewById(R.id.rl_body);
+		rl_bg = (RelativeLayout) findViewById(R.id.rl_bg);
+		console = (CardView) findViewById(R.id.console);
 
 		i_reload = (ImageButton) findViewById(R.id.i_reload);
 		i_scores = (ImageButton) findViewById(R.id.i_scores);
 		i_menu = (ImageButton) findViewById(R.id.i_menu);
 		i_mute = (ImageButton) findViewById(R.id.i_mute);
+		i_help = (ImageButton) findViewById(R.id.i_help);
 
-		Button done = (Button) findViewById(R.id.new_game);
 
+		// Define in-game menu
+		menu = new Dialog(GameActivity.this);
+		defineMenu();
 
 
 //		// Lock Digits
@@ -177,6 +390,46 @@ public class GameActivity extends Activity {
 //			}
 //		});
 
+        if(inputMethod.equals("keypad")) {
+            Button[] kps = {kp_0,kp_1,kp_2,kp_3,kp_4,kp_5,kp_6,kp_7,kp_8,kp_9};
+            for(Button b:kps) {
+
+                final Button button = b;
+                b.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        switch (tv_d) {
+                            case 1:
+                                tv_d_1.setText(String.valueOf(button.getText()));
+                                activateTv(2,1);
+                                break;
+                            case 2:
+                                tv_d_2.setText(String.valueOf(button.getText()));
+                                activateTv(3,1);;
+                                break;
+                            case 3:
+                                tv_d_3.setText(String.valueOf(button.getText()));
+                                activateTv(4,1);
+                                break;
+                            case 4:
+                                tv_d_4.setText(String.valueOf(button.getText()));
+                                activateTv(1,1);
+                                break;
+                        }
+                    }
+                });
+            }
+
+				kp_decrypt.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View v) {
+						decrypt();
+
+					}
+				});
+
+        }
+
+
+        if(inputMethod.equals("keyboard")||inputMethod.equals("keypad"))
 		// Change Focus
 		tv_d_1.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -204,13 +457,14 @@ public class GameActivity extends Activity {
 			}
 		});
 
+        if(inputMethod.equals("keyboard"))
 		tv_d_2.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
 				// TODO Auto-generated method stub
 				if(tv_d_2.getText().length()!=0)
-				tv_d_3.requestFocus();
+					tv_d_3.requestFocus();
 
 
 			}
@@ -229,13 +483,14 @@ public class GameActivity extends Activity {
 			}
 		});
 
+        if(inputMethod.equals("keyboard"))
 		tv_d_3.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
 				// TODO Auto-generated method stub
 				if(tv_d_3.getText().length()!=0)
-				tv_d_4.requestFocus();
+					tv_d_4.requestFocus();
 
 
 			}
@@ -254,6 +509,7 @@ public class GameActivity extends Activity {
 			}
 		});
 
+        if(inputMethod.equals("keyboard"))
 		tv_d_4.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
@@ -279,15 +535,55 @@ public class GameActivity extends Activity {
 			}
 		});
 
+        if(inputMethod.equals("slider")||inputMethod.equals("keypad"))
+		tv_d_1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                activateTv(1, 0);
+            }
 
+        });
+
+        if(inputMethod.equals("slider")||inputMethod.equals("keypad"))
+		tv_d_2.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+
+                activateTv(2, 0);
+			}
+
+		});
+
+        if(inputMethod.equals("slider")||inputMethod.equals("keypad"))
+		tv_d_3.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+                activateTv(3, 0);
+			}
+
+		});
+
+        if(inputMethod.equals("slider")||inputMethod.equals("keypad"))
+		tv_d_4.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+
+                activateTv(4, 0);
+			}
+
+		});
 
 		initializeGame();
 
+
+
 		i_reload.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				rl_feed.removeAllViews();
-				rl_feed.setVisibility(View.INVISIBLE);
-				initializeGame();
+				if (!restartPending) {
+					rl_feed.removeAllViews();
+					rl_feed.setVisibility(View.INVISIBLE);
+					initializeGame();
+				} else {
+					Intent i = new Intent(GameActivity.this, GameActivity.class);
+					startActivity(i);
+					finish();
+				}
 			}
 
 		});
@@ -295,30 +591,63 @@ public class GameActivity extends Activity {
 		i_scores.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 
-				leastMoves = sp.getInt("highscore", 0);
-				if(leastMoves == 10000){
-					leastMoves = 0;
-				}
+				report_dialog = new Dialog(GameActivity.this);
+				WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+				lp.copyFrom(report_dialog.getWindow().getAttributes());
 
-				final Dialog dialog = new Dialog(GameActivity.this);
-				dialog.setContentView(R.layout.highscore_dialog);
-				Window window = dialog.getWindow();
-				window.setBackgroundDrawableResource(R.drawable.blank);
-				dialog.setCancelable(true);
+				lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+				lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+				report_dialog.setContentView(R.layout.report_dialog);
+				report_dialog.show();
+				menu_ID=2;
 
-				d_highscore = (TextView)dialog.findViewById(R.id.highscore);
-				dialog.show();
-				d_highscore.setText(Integer.toString(leastMoves));
-				d_highscore.setTextColor(Color.parseColor(bg[bg_index]));
+				Window window = report_dialog.getWindow();
+				window.setBackgroundDrawableResource(R.drawable.menu_dialog_back);
+				report_dialog.setCancelable(true);
+				report_dialog.getWindow().setAttributes(lp);
+
+				TextView report_title = (TextView)report_dialog.findViewById(R.id.report_title);
+				TextView report_back = (TextView)report_dialog.findViewById(R.id.report_back);
+				report_back.setText("Back to Mission");
+				report_title.setTextColor(accent);
+				Typewriter report_text = (Typewriter)report_dialog.findViewById(R.id.report_text);
+
+				// Get Stats Preferences
+				int d1 = sp_stats.getInt("highscore", 10000);
+				float d2 = sp_stats.getFloat("MPG", 0);
+				int d3 = sp_stats.getInt("GAMES", 0);
+
+				String history = sp_stats.getString("HISTORY", "");
+				if(!history.equals(""))
+					history = "\n\nHistory:\n" + history;
+
+				if(d1 == 10000) d1 = 0;
+				if(d2 == Float.POSITIVE_INFINITY) d2 = 0;
+				if(d3 == 0) d3 = 0;
+
+				int d4 = Math.round(d2);
+
+				String st = "File #: 0310848664523\nAlias: Agent B\nReal name: CLASSIFIED\nAge: 26\n\nHandler: Agent O\n" +
+						"Nationality: CLASSIFIED\n\n# of Missions: "+ Integer.toString(d3)+ "\n# of Moves per Mission: " + Integer.toString(d4) +
+						"\nBest mission: " + Integer.toString(d1) + " moves"+history;
+
+				report_text.setCharacterDelay(5);
+				report_text.animateText(st);
+				report_back.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View v) {
+						report_dialog.cancel();
+						menu_ID=0;
+					}
+
+				});
 			}
 
 		});
 
 		i_menu.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-
-				finish();
-
+                menu.show();
+				defineMenu();
 			}
 
 		});
@@ -326,7 +655,7 @@ public class GameActivity extends Activity {
 
 		i_mute.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if(notmute){
+				if (notmute) {
 					music.release();
 					notmute = false;
 
@@ -337,181 +666,477 @@ public class GameActivity extends Activity {
 
 		});
 
-
-
-		done.setOnClickListener(new View.OnClickListener() {
+		i_help.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				cont=true;
 
-				uip[0] = tv_d_1.getText().toString();
-				uip[1] = tv_d_2.getText().toString();
-				uip[2] = tv_d_3.getText().toString();
-				uip[3] = tv_d_4.getText().toString();
+				training_dialog = new Dialog(GameActivity.this);
+				WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+				lp.copyFrom(training_dialog.getWindow().getAttributes());
 
+				lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+				lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+				training_dialog.setContentView(R.layout.training_dialog);
+				training_dialog.show();
+				menu_ID=3;
 
-				// If any field is empty
-				if(uip[0].equals("")||uip[2].equals("")||uip[3].equals("")||uip[1].equals(""))
-				{
-					Snackbar.make(v, "Please do not leave any field empty.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-					tv_d_1.setBackgroundResource(R.drawable.bg_red);
-					tv_d_2.setBackgroundResource(R.drawable.bg_red);
-					tv_d_3.setBackgroundResource(R.drawable.bg_red);
-					tv_d_4.setBackgroundResource(R.drawable.bg_red);
-					cont=false;
-				}
-				else
-				{	
-					tv_d_1.setBackgroundResource(R.drawable.bg);
-					tv_d_2.setBackgroundResource(R.drawable.bg);
-					tv_d_3.setBackgroundResource(R.drawable.bg);
-					tv_d_4.setBackgroundResource(R.drawable.bg);
+				Window window = training_dialog.getWindow();
+				window.setBackgroundDrawableResource(R.drawable.menu_dialog_back);
+				training_dialog.setCancelable(true);
+				training_dialog.getWindow().setAttributes(lp);
 
-					for(int i=0;i<3;i++)
-						for(int k=i+1;k<4;k++)
-							if (uip[i].equals(uip[k]))
-							{
-								Snackbar.make(v, "Enter distinct digits.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-								if(i==0)
-									tv_d_1.setBackgroundResource(R.drawable.bg_red);
-								else if (i==1)
-									tv_d_2.setBackgroundResource(R.drawable.bg_red);
-								else if (i==2)
-									tv_d_3.setBackgroundResource(R.drawable.bg_red);
-								else if (i==3)
-									tv_d_4.setBackgroundResource(R.drawable.bg_red);
+				TextView training_title = (TextView)training_dialog.findViewById(R.id.training_title);
+				TextView training_back = (TextView)training_dialog.findViewById(R.id.training_back);
+				training_title.setTextColor(Color.parseColor(bg[bg_index]));
+				Typewriter training_text = (Typewriter)training_dialog.findViewById(R.id.training_text);
+				training_back.setText("Back to Mission");
 
-								if(k==0)
-									tv_d_1.setBackgroundResource(R.drawable.bg_red);
-								else if (k==1)
-									tv_d_2.setBackgroundResource(R.drawable.bg_red);
-								else if (k==2)
-									tv_d_3.setBackgroundResource(R.drawable.bg_red);
-								else if (k==3)
-									tv_d_4.setBackgroundResource(R.drawable.bg_red);
+				String st = getResources().getString(R.string.training);
 
-								cont=false;
-								break;
-							}
+				training_text.setCharacterDelay(5);
+				training_text.animateText(st);
 
-					if (cont)
-					{
-						tv_d_1.setHint(tv_d_1.getText().toString());
-						tv_d_2.setHint(tv_d_2.getText().toString());
-						tv_d_3.setHint(tv_d_3.getText().toString());
-						tv_d_4.setHint(tv_d_4.getText().toString());
-
-						tv_d_1.setText("");
-						tv_d_2.setText("");
-						tv_d_3.setText("");
-						tv_d_4.setText("");
-
-						bulls=0;
-						cows=0;
-
-						//Calculate Bulls
-						for(int i=0;i<4;i++)
-							if(uip[i].equals(rno[i]))
-								bulls+=1;						
-
-
-
-						//Calculate Cows
-						for(int i=0;i<4;i++)
-							for(int k=0;k<4;k++)
-								if (uip[i].equals(rno[k]))
-								{
-									cows+=1;
-								}
-
-						cows=cows-bulls;
-
-						tv_bulls.setText("Hits: " + String.valueOf(bulls) + "         Clicks: " + String.valueOf(cows));
-						Random r1 = new Random();
-						int r_int = r1.nextInt(19);
-						long l_int = r1.nextInt(1000000000);
-
-						final TextView row1 = new TextView(getBaseContext());
-						row1.generateViewId();
-						row1.setTextAppearance(getBaseContext(), android.R.style.TextAppearance_Small);
-						row1.setText(">> " + random_jargon[r_int]);
-						row1.setTextColor(Color.parseColor("#BBFFFFFF"));
-						row1.setTypeface(Typeface.MONOSPACE);
-
-						final TextView row2 = new TextView(getBaseContext());
-						row2.setTextAppearance(getBaseContext(), android.R.style.TextAppearance_Small);
-						row2.setText(uip[0] + "" + uip[1] + "" + uip[2] + "" + uip[3] + "> " + "Hits:" + String.valueOf(bulls) + " && Clicks:" + String.valueOf(cows));
-						row2.setTextColor(Color.parseColor("#FFFFFFFF"));
-						row2.setTextSize(22);
-						row2.setTypeface(Typeface.MONOSPACE);
-						feed_count+=1;
-
-						final TextView row3 = new TextView(getBaseContext());
-						row3.setTextAppearance(getBaseContext(), android.R.style.TextAppearance_Small);
-						row3.setText(Long.toString(l_int)+"**********************");
-						row3.setTextSize(10);
-						row3.setTextColor(Color.parseColor("#AAFFFFFF"));
-						row3.setTypeface(Typeface.MONOSPACE);
-
-						rl_feed.addView(row1);
-						rl_feed.addView(row2);
-						rl_feed.addView(row3);
-						rl_feed.setVisibility(View.VISIBLE);
-						rl_feed.setBackgroundResource(R.drawable.card_background_layout);
-
-						if(bulls==4&&cows==0)
-						{
-							tv_bulls.setText("Phew! That was close. Attempts: "+String.valueOf(feed_count)+" times.");
-
-							//Update stats
-							no_games++;
-							avg_mpg = (avg_mpg*(no_games-1) + feed_count)/no_games;
-							ed.putFloat("MPG", avg_mpg);
-							ed.putInt("GAMES", no_games);
-							ed.commit();
-
-							if(leastMoves>=feed_count)
-							{
-								ed.putInt(HIGHSCORE, feed_count);
-								ed.commit();
-								tv_bulls.setText("You are the best, Agent B!");
-							}
-						}
+				training_back.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View v) {
+						training_dialog.cancel();
+						menu_ID=0;
 					}
+
+				});
+			}
+
+		});
+
+		
+
+
+	}
+
+	private void defineMenu() {
+
+		final WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+		lp.copyFrom(menu.getWindow().getAttributes());
+
+		lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+		lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+		menu.setContentView(R.layout.menu_dialog);
+
+		Window window = menu.getWindow();
+		window.setBackgroundDrawableResource(R.drawable.menu_dialog_back);
+		menu.setCancelable(true);
+
+		menu.getWindow().setAttributes(lp);
+
+		TextView d_title = (TextView)menu.findViewById(R.id.menu_title);
+		final Typewriter d_not = (Typewriter)menu.findViewById(R.id.menu_notification);
+		final TextView resume = (TextView)menu.findViewById(R.id.resume);
+		TextView objective = (TextView)menu.findViewById(R.id.objective);
+		TextView layout = (TextView)menu.findViewById(R.id.layout);
+		TextView quit = (TextView)menu.findViewById(R.id.quit);
+		TextView input = (TextView)menu.findViewById(R.id.input);
+		TextView theme = (TextView)menu.findViewById(R.id.theme);
+		final TextView input_selected = (TextView)menu.findViewById(R.id.input_selected);
+		final TextView layout_selected = (TextView)menu.findViewById(R.id.layout_selected);
+		final TextView theme_selected = (TextView)menu.findViewById(R.id.theme_selected);
+
+		//Colorify Menu
+		d_title.setTextColor(accent);
+		d_not.setTextColor(accent);
+		layout_selected.setTextColor(accent);
+		input_selected.setTextColor(accent);
+		theme_selected.setTextColor(accent);
+
+		//Read SharedPreferences File
+		input_selected.setText(sp_prefs.getString("inputMethod", "keypad"));
+
+		String layouts[]={"top console", "bottom console"};
+		layout_selected.setText(layouts[layoutID-1]);
+
+		String themes[]={"light theme", "dark theme"};
+		int themeID = 0;
+		if(!darkTheme) themeID = 0;
+		else themeID = 1;
+		theme_selected.setText(themes[themeID]);
+
+
+
+		// OnClick Listeners
+		quit.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				finish();
+			}
+
+		});
+
+		TextView[] ia = {input,input_selected};
+
+		for(TextView i: ia)
+			i.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					inputMethod = sp_prefs.getString("inputMethod", "keypad");
+					String sel = "";
+					if(inputMethod.equals("keyboard")){
+						ed_pref.putString("inputMethod", "slider");
+						sel = "slider";
+					}
+					else  if(inputMethod.equals("slider")){
+						ed_pref.putString("inputMethod", "keypad");
+						sel = "keypad";
+					}
+					else  if(inputMethod.equals("keypad")){
+						ed_pref.putString("inputMethod", "keyboard");
+						sel = "keyboard";
+					}
+
+					input_selected.setText(sel);
+					ed_pref.commit();
+					if(!restartPending)d_not.animateText(RESTART_TEXT);
+					restartPending = true;
+					animateTv(resume, 100);
+					animateIcon(i_reload);
+				}
+
+			});
+
+		TextView[] ta = {theme,theme_selected};
+		for(TextView n: ta)
+			n.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					darkTheme = sp_prefs.getBoolean("themeID", true);
+					String sel = "";
+					if(!darkTheme){
+						ed_pref.putBoolean("themeID", true);
+						sel = "dark theme";
+					}
+					else  if(darkTheme){
+						ed_pref.putBoolean("themeID", false);
+						sel = "light theme";
+					}
+
+					theme_selected.setText(sel);
+
+					ed_pref.commit();
+					if(!restartPending)d_not.animateText(RESTART_TEXT);
+					restartPending = true;
+					animateTv(resume, 100);
+					animateIcon(i_reload);
+				}
+
+			});
+
+		resume.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				menu.cancel();
+				if(restartPending) {
+					consoleAlert("Restart required!");
 				}
 			}
 
 		});
-		
+
+		objective.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+
+				brief_dialog = new Dialog(GameActivity.this);
+				WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+				lp.copyFrom(brief_dialog.getWindow().getAttributes());
+
+				lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+				lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+				brief_dialog.setContentView(R.layout.brief_dialog);
+				brief_dialog.show();
+
+				Window window = brief_dialog.getWindow();
+				window.setBackgroundDrawableResource(R.drawable.menu_dialog_back);
+				brief_dialog.setCancelable(true);
+				brief_dialog.getWindow().setAttributes(lp);
+
+				TextView brief_title = (TextView)brief_dialog.findViewById(R.id.brief_title);
+				TextView brief_back = (TextView)brief_dialog.findViewById(R.id.brief_back);
+				brief_title.setTextColor(accent);
+				Typewriter brief_text = (Typewriter)brief_dialog.findViewById(R.id.brief_text);
+
+				String st = getResources().getString(R.string.mission_brief);
+				brief_text.setCharacterDelay(20);
+				brief_text.animateText(st);
+				brief_back.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View v) {
+						brief_dialog.cancel();
+					}
+
+				});
+			}
+
+		});
+
+		TextView[] la = {layout,layout_selected};
+		for(TextView p: la)
+			p.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					layoutID = sp_prefs.getInt("layoutID", 2);
+					String sel = "";
+					String layouts[]={"top console", "bottom console"};
+
+					if(layoutID == 2){
+						ed_pref.putInt("layoutID", 1);
+						sel = "top console";
+
+					}
+					else if(layoutID==1){
+						ed_pref.putInt("layoutID", 2);
+						sel = "bottom console";
+					}
+					layout_selected.setText(sel);
+					ed_pref.commit();
+					if(!restartPending)d_not.animateText(RESTART_TEXT);
+					restartPending = true;
+					animateTv(resume, 100);
+					animateIcon(i_reload);
+				}
+
+			});
+	}
+
+
+	private void activateTv(int i, int mode){
+		// mode = 0, activated from decrypt() on empty fields, onClick
+		// mode = 1, is right swipe gesture
+		// mode = 2, is left swipe gesture
+		tv_d = i;
+		if(i==1){
+			//tv_d_1 active
+			if(inputMethod.equals("slider"))
+				if(!(tv_d_1.getText().toString().equals("")))
+					sb.setProgress(Integer.valueOf(tv_d_1.getText().toString()));
+				else if(!(tv_d_1.getHint().toString().equals(""))&&mode==1){
+					sb.setProgress(Integer.valueOf(tv_d_1.getHint().toString()));
+				}
+			stopOtherAnim(1);
+			animateCur(c1);
+			c1.setVisibility(View.VISIBLE);
+			c2.setVisibility(View.INVISIBLE);
+			c3.setVisibility(View.INVISIBLE);
+			c4.setVisibility(View.INVISIBLE);
+		}
+		else if(i==2){
+			//tv_d_2 active
+			if(inputMethod.equals("slider"))
+				if(!(tv_d_2.getText().toString().equals("")))
+					sb.setProgress(Integer.valueOf(tv_d_2.getText().toString()));
+				else if(!(tv_d_2.getHint().toString().equals(""))&&mode==1){
+					sb.setProgress(Integer.valueOf(tv_d_2.getHint().toString()));
+				}
+
+			stopOtherAnim(2);
+            animateCur(c2);
+            c2.setVisibility(View.VISIBLE);
+			c1.setVisibility(View.INVISIBLE);
+			c3.setVisibility(View.INVISIBLE);
+			c4.setVisibility(View.INVISIBLE);
+		}
+		else if(i==3){
+			//tv_d_3 active
+            if(inputMethod.equals("slider"))
+            if(!(tv_d_3.getText().toString().equals("")))
+                sb.setProgress(Integer.valueOf(tv_d_3.getText().toString()));
+            else if(!(tv_d_3.getHint().toString().equals(""))&&mode==1){
+                sb.setProgress(Integer.valueOf(tv_d_3.getHint().toString()));
+            }
+
+            stopOtherAnim(3);
+            animateCur(c3);
+            c3.setVisibility(View.VISIBLE);
+			c2.setVisibility(View.INVISIBLE);
+			c1.setVisibility(View.INVISIBLE);
+			c4.setVisibility(View.INVISIBLE);
+		}
+		else if(i==4){
+			//tv_d_4 active
+            if(inputMethod.equals("slider"))
+            if(!(tv_d_4.getText().toString().equals("")))
+                sb.setProgress(Integer.valueOf(tv_d_4.getText().toString()));
+            else if(!(tv_d_4.getHint().toString().equals(""))&&mode==1){
+                sb.setProgress(Integer.valueOf(tv_d_4.getHint().toString()));
+            }
+
+            stopOtherAnim(4);
+            animateCur(c4);
+            c4.setVisibility(View.VISIBLE);
+			c2.setVisibility(View.INVISIBLE);
+			c3.setVisibility(View.INVISIBLE);
+			c1.setVisibility(View.INVISIBLE);
+
+		}
+	}
+
+    private void stopOtherAnim(int c) {
+        int cur = c;
+        RelativeLayout[] rl = {c1,c2,c3,c4};
+        switch (cur){
+            case 1: for(int i = 1; i <=3; i++) rl[i].clearAnimation();
+                break;
+            case 2: for(int i = 0; i <=3; i++) if(i != 1) rl[i].clearAnimation();
+                break;
+            case 3: for(int i = 0; i <=3; i++) if(i != 2) rl[i].clearAnimation();
+                break;
+            case 4: for(int i = 0; i <=2; i++) rl[i].clearAnimation();
+                break;
+
+        }
+    }
+
+
+	private void animateCur(RelativeLayout c) {
+		final RelativeLayout cur = c;
+
+		blinkAnim = new AlphaAnimation(1, 0);
+		blinkAnim.setDuration(200);
+		blinkAnim.setInterpolator(new LinearInterpolator());
+		blinkAnim.setRepeatCount(Animation.INFINITE);
+		blinkAnim.setRepeatMode(Animation.REVERSE);
+		c.startAnimation(blinkAnim);
+	}
+
+	private void animateIcon(ImageButton b) {
+		final ImageButton cur = b;
+
+		blinkAnim = new AlphaAnimation(1, 0);
+		blinkAnim.setDuration(500);
+		blinkAnim.setInterpolator(new LinearInterpolator());
+		blinkAnim.setRepeatCount(Animation.INFINITE);
+		blinkAnim.setRepeatMode(Animation.REVERSE);
+		b.startAnimation(blinkAnim);
+	}
+
+	private void animateTv(TextView t, int repeatCount) {
+		blinkAnim = new AlphaAnimation(1, 0);
+		blinkAnim.setDuration(800);
+		blinkAnim.setInterpolator(new LinearInterpolator());
+		blinkAnim.setRepeatCount(repeatCount);
+		blinkAnim.setRepeatMode(Animation.REVERSE);
+		t.startAnimation(blinkAnim);
+	}
+
+	private void consoleAlert(String t){
+		cont = true;
+		consoleTextAnim(t, 100, 40);
+		cont = false;
+	}
+
+    private void consoleTextAnim(final String text, int time, int charDelay){
+        final int cd = charDelay;
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				// After time ms
+
+				tv_bulls.setCharacterDelay(cd);
+				tv_bulls.animateText(text);
+			}
+		}, time);
+    }
+
+    public void sendToast(Object charSequence){
+		Toast.makeText(getBaseContext(), (String) charSequence, Toast.LENGTH_SHORT);
+
+	}
+
+	public void makeSnack(String t){
+		View v = findViewById(R.id.rl_body);
+		Snackbar.make(v, t, Snackbar.LENGTH_LONG).setAction("Action", null).show();
 
 
 	}
 
-	@SuppressLint("ShowToast")
-	void sendToast(Object charSequence){
-		Toast.makeText(getBaseContext(), (String)charSequence, Toast.LENGTH_SHORT);
+	//Initialize game
+	private void initializeGame(){
 
-	}
+		// Random Digits Generator
+		r = new Random();
 
-	public void initializeGame(){
-		tv_bulls.setText(">> initiating code breaker -d");
-		
+		// Enable Input methods
+		if(inputMethod.equals("keyboard")) done.setEnabled(true);
+		if(inputMethod.equals("keypad")) kp_decrypt.setEnabled(true);
+		if(inputMethod.equals("slider")) sb.setEnabled(true);
+
+		//Random bg_index
+		bg_index=r.nextInt(8);
+		accent = Color.parseColor(bg[bg_index]);
+
+		//Reset Score counter
+		feed_count = 0;
+
+		//Clear animations
+        tv_bulls.clearAnimation();
+		i_reload.clearAnimation();
+		i_scores.clearAnimation();
+
+        // Reset digit textviews
 		tv_d_1.setHint("");
 		tv_d_2.setHint("");
 		tv_d_3.setHint("");
 		tv_d_4.setHint("");
-		
-		// Random Digits Generator
-		r = new Random();
 
-		// Random Background Color
-		bg_index=r.nextInt(8);
-		rl_body.setBackgroundColor(Color.parseColor(bg[bg_index]));
-		tv_bulls.setTextColor(Color.parseColor(bg[bg_index]));
-		tv_d_1.setTextColor(Color.parseColor(bg[bg_index]));
-		tv_d_2.setTextColor(Color.parseColor(bg[bg_index]));
-		tv_d_3.setTextColor(Color.parseColor(bg[bg_index]));
-		tv_d_4.setTextColor(Color.parseColor(bg[bg_index]));
+        tv_d_1.setText("");
+        tv_d_2.setText("");
+        tv_d_3.setText("");
+        tv_d_4.setText("");
 
+		//Request focus on tv_d_1
+        if(inputMethod.equals("slider")||inputMethod.equals("keypad")) {
+            tv_d = 1;
+            activateTv(1, 0);
+            if(inputMethod.equals("slider"))sb.setProgress(0);
+        }
+
+
+		// Theme/Background Color
+        if(darkTheme) {
+			rl_body.setBackgroundColor(Color.parseColor("#FE000000"));
+			rl_bg.setBackgroundColor(Color.parseColor("#FE000000"));
+			console.setCardBackgroundColor(Color.parseColor("#33FFFFFF"));
+			tv_d_1.setHintTextColor(Color.parseColor("#21FFFFFF"));
+			tv_d_2.setHintTextColor(Color.parseColor("#21FFFFFF"));
+			tv_d_3.setHintTextColor(Color.parseColor("#21FFFFFF"));
+			tv_d_4.setHintTextColor(Color.parseColor("#21FFFFFF"));
+			tv_d_1.setBackgroundResource(R.drawable.bg_dark);
+			tv_d_2.setBackgroundResource(R.drawable.bg_dark);
+			tv_d_3.setBackgroundResource(R.drawable.bg_dark);
+			tv_d_4.setBackgroundResource(R.drawable.bg_dark);
+			tw_bg.setTextColor(accent);
+		}
+        else {
+			rl_body.setBackgroundColor(accent);
+			tw_bg.setTextColor(Color.parseColor("#AAFFFFFF"));
+			console.setCardBackgroundColor(Color.parseColor("#DDFFFFFF"));
+			tv_d_1.setHintTextColor(Color.parseColor("#AAFFFFFF"));
+			tv_d_2.setHintTextColor(Color.parseColor("#AAFFFFFF"));
+			tv_d_3.setHintTextColor(Color.parseColor("#AAFFFFFF"));
+			tv_d_4.setHintTextColor(Color.parseColor("#AAFFFFFF"));
+			tv_d_1.setBackgroundResource(R.drawable.bg);
+			tv_d_2.setBackgroundResource(R.drawable.bg);
+			tv_d_3.setBackgroundResource(R.drawable.bg);
+			tv_d_4.setBackgroundResource(R.drawable.bg);
+		}
+
+        tv_bulls.setTextColor(accent);
+		tv_d_1.setTextColor(accent);
+		tv_d_2.setTextColor(accent);
+		tv_d_3.setTextColor(accent);
+		tv_d_4.setTextColor(accent);
+        p_1.setTextColor(accent);
+
+		//Setup cursors
+        if(inputMethod.equals("slider")||inputMethod.equals("keypad")) {
+            c1.setBackgroundColor(accent);
+            c1.setVisibility(View.VISIBLE);
+            c2.setBackgroundColor(accent);
+            c2.setVisibility(View.INVISIBLE);
+            c3.setBackgroundColor(accent);
+            c3.setVisibility(View.INVISIBLE);
+            c4.setBackgroundColor(accent);
+            c4.setVisibility(View.INVISIBLE);
+        }
 
 		// Distinct digits generator
 		do{
@@ -530,5 +1155,231 @@ public class GameActivity extends Activity {
 
 
 		}while(distinct==false);
+
+        // Detect touched area
+		detector = new SimpleGestureFilter(this,this);
+
+		// Typewriter animation
+		consoleTextAnim("booting code breaker -d", 2000, 40);
+		consoleTextAnim("user: nira_ag_b", 6000, 25);
+		consoleTextAnim("pass: ********", 8000, 40);
+		consoleTextAnim("code breaker active", 10000, 40);
+		consoleTextAnim("", 12800, 40);
+	}
+
+	//Decrypt function
+	private void decrypt(){
+
+        if(inputMethod.equals("slider")) {
+		// activateTv(4,0);
+        }
+
+        sv.setSmoothScrollingEnabled(true);
+        sv.postDelayed(new Runnable() {
+            public void run() {
+                sv.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        }, 30);
+
+		cont=true;
+
+		uip[0] = tv_d_1.getText().toString();
+		uip[1] = tv_d_2.getText().toString();
+		uip[2] = tv_d_3.getText().toString();
+		uip[3] = tv_d_4.getText().toString();
+
+
+		// If any field is empty
+		if(uip[0].equals("")||uip[2].equals("")||uip[3].equals("")||uip[1].equals(""))
+		{
+			consoleAlert("Do not leave any field empty.");
+			if(uip[0].equals("")){
+                tv_d_1.setBackgroundResource(R.drawable.bg_red);
+                if(inputMethod.equals("slider")||inputMethod.equals("keypad"))activateTv(1, 0);
+            }
+            if(uip[1].equals("")){
+                tv_d_2.setBackgroundResource(R.drawable.bg_red);
+                if(inputMethod.equals("slider")||inputMethod.equals("keypad"))activateTv(2, 0);
+            }
+            if(uip[2].equals("")){
+                tv_d_3.setBackgroundResource(R.drawable.bg_red);
+                if(inputMethod.equals("slider")||inputMethod.equals("keypad"))activateTv(3, 0);
+            }
+            if(uip[3].equals("")){
+                tv_d_4.setBackgroundResource(R.drawable.bg_red);
+                if(inputMethod.equals("slider")||inputMethod.equals("keypad"))activateTv(4, 0);
+            }
+			cont=false;
+		}
+		else
+		{
+            tv_d_1.setBackgroundResource(R.drawable.bg);
+			tv_d_2.setBackgroundResource(R.drawable.bg);
+			tv_d_3.setBackgroundResource(R.drawable.bg);
+			tv_d_4.setBackgroundResource(R.drawable.bg);
+
+			for(int i=0;i<=3;i++)
+				for(int k=i+1;k<4;k++)
+					if (uip[i].equals(uip[k]))
+					{
+						consoleAlert("Enter distinct digits.");
+						if(i==0)
+							tv_d_1.setBackgroundResource(R.drawable.bg_red);
+						else if (i==1)
+							tv_d_2.setBackgroundResource(R.drawable.bg_red);
+						else if (i==2)
+							tv_d_3.setBackgroundResource(R.drawable.bg_red);
+						else if (i==3)
+							tv_d_4.setBackgroundResource(R.drawable.bg_red);
+
+						if(k==0)
+							tv_d_1.setBackgroundResource(R.drawable.bg_red);
+						else if (k==1)
+							tv_d_2.setBackgroundResource(R.drawable.bg_red);
+						else if (k==2)
+							tv_d_3.setBackgroundResource(R.drawable.bg_red);
+						else if (k==3)
+							tv_d_4.setBackgroundResource(R.drawable.bg_red);
+
+						cont=false;
+						break;
+					}
+
+			if (cont)
+			{
+				tv_d_1.setHint(tv_d_1.getText().toString());
+				tv_d_2.setHint(tv_d_2.getText().toString());
+				tv_d_3.setHint(tv_d_3.getText().toString());
+				tv_d_4.setHint(tv_d_4.getText().toString());
+
+				tv_d_1.setText("");
+				tv_d_2.setText("");
+				tv_d_3.setText("");
+				tv_d_4.setText("");
+
+				bulls=0;
+				cows=0;
+
+				//Calculate Bulls
+				for(int i=0;i<4;i++)
+					if(uip[i].equals(rno[i]))
+						bulls+=1;
+
+
+
+				//Calculate Cows
+				for(int i=0;i<4;i++)
+					for(int k=0;k<4;k++)
+						if (uip[i].equals(rno[k]))
+						{
+							cows+=1;
+						}
+
+				cows=cows-bulls;
+
+				if(bulls!=4)
+					consoleTextAnim("[Hits]: " + String.valueOf(bulls) + "  &  [Clicks]: " + String.valueOf(cows), 30, 20);
+
+				Random p = new Random();
+				int r_int = p.nextInt(19);
+				long l_int = p.nextInt(1000000000);
+
+				//Jargon
+				final Typewriter row1 = new Typewriter(getBaseContext());
+				row1.generateViewId();
+				row1.setTextAppearance(getBaseContext(), android.R.style.TextAppearance_Small);
+                row1.setCharacterDelay(140);
+				row1.animateText(">> " + random_jargon[r_int]);
+				if(!darkTheme)
+					row1.setTextColor(Color.parseColor("#BBFFFFFF"));
+				else {
+					row1.setTextColor(accent);
+					row1.setAlpha(0.5f);
+				}
+				row1.setTypeface(Typeface.MONOSPACE);
+
+				//Result
+				final TextView row2 = new TextView(getBaseContext());
+				row2.setTextAppearance(getBaseContext(), android.R.style.TextAppearance_Small);
+				row2.setText(uip[0] + "" + uip[1] + "" + uip[2] + "" + uip[3] + "> " + "Hits:" + String.valueOf(bulls) + " && Clicks:" + String.valueOf(cows));
+				if(!darkTheme)
+					row2.setTextColor(Color.parseColor("#BBFFFFFF"));
+				else {
+					row2.setTextColor(accent);
+					row2.setAlpha(0.9f);
+				}
+				row2.setTextSize(22);
+				row2.setTypeface(Typeface.MONOSPACE);
+				feed_count+=1;
+
+				//Random long number
+				final TextView row3 = new TextView(getBaseContext());
+				row3.setTextAppearance(getBaseContext(), android.R.style.TextAppearance_Small);
+				row3.setText(Long.toString(l_int) + "**********************");
+				row3.setTextSize(10);
+				if(!darkTheme)
+					row3.setTextColor(Color.parseColor("#BBFFFFFF"));
+				else {
+					row3.setTextColor(accent);
+					row3.setAlpha(0.5f);
+				}
+				row3.setTypeface(Typeface.MONOSPACE);
+
+				//Add a reult to console output
+				rl_feed.addView(row1);
+				rl_feed.addView(row2);
+				rl_feed.addView(row3);
+				rl_feed.setVisibility(View.VISIBLE);
+				if(darkTheme)
+					rl_feed.setBackgroundResource(R.drawable.console_output_darktheme);
+				else
+					rl_feed.setBackgroundResource(R.drawable.console_output);
+
+				//On game complete
+				if(bulls==4&&cows==0)
+				{
+					tv_d_1.setText("O");
+					tv_d_2.setText("P");
+					tv_d_3.setText("E");
+					tv_d_4.setText("N");
+
+					// Disable input methods
+					if(inputMethod.equals("keyboard")) done.setEnabled(false);
+					if(inputMethod.equals("keypad")) kp_decrypt.setEnabled(false);
+					if(inputMethod.equals("slider")) sb.setEnabled(false);
+
+
+					//Update highscore if valid
+					if(leastMoves>=feed_count)
+					{
+						ed.putInt("highscore", feed_count);
+						ed.commit();
+					}
+
+					//Display messages & animations
+					consoleTextAnim("This is your best yet!", 100, 20);
+                    String st = "Warhead disarmed in "+String.valueOf(feed_count+" moves.");
+					consoleTextAnim(st, 3500, 40);
+					consoleTextAnim("Good job Agent B!", 6000, 40);
+					consoleTextAnim("Sending extraction.", 8000, 40);
+					animateIcon(i_scores);
+
+					// Get date and time
+					Calendar c = Calendar.getInstance();
+					String instant = String.valueOf(c.get(Calendar.MONTH))+ "-" +
+							String.valueOf(c.get(Calendar.DATE))+ "-" +
+							String.valueOf(c.get(Calendar.YEAR));
+
+					//Update stats
+					no_games++;
+					avg_mpg = (avg_mpg*(no_games-1) + feed_count)/no_games;
+					ed.putFloat("MPG", avg_mpg);
+					ed.putInt("GAMES", no_games);
+					ed.putString("HISTORY", sp_stats.getString("HISTORY", "") + "\n" + instant + "  ::  " + String.valueOf(feed_count) + " Moves");
+					ed.commit();
+
+				}
+			}
+		}
 	}
 }

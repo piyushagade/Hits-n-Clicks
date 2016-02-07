@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_root"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/blank"
+        android:layout_margin="15dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/relativeLayout3">
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rl3"
+                android:layout_centerHorizontal="true">
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Report: Agent B"
+            android:id="@+id/report_title"
+            android:textSize="30dp"
+            android:typeface="monospace"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/report_sv"
+            android:fillViewport="false"
+            android:fadeScrollbars="false"
+            android:paddingRight="6dp"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbarSize="0dip"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbarThumbVertical="@drawable/scroll"
+            android:layout_marginTop="6dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/report_title"
+            android:layout_above="@+id/report_back">
+            <com.jp.cowsnbulls.Typewriter
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/report_text"
+                android:layout_marginTop="8dp"
+                android:textSize="16dp"
+                android:textColor="#AAFFFFFF"
+                android:typeface="monospace"
+                android:layout_below="@+id/menu_title"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"/>
+
+        </ScrollView>
+
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:src="@drawable/confidential"
+            android:layout_below="@+id/report_title"
+            android:layout_alignRight="@+id/report_title"
+            android:layout_alignEnd="@+id/report_title"/>
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back To Menu"
+            android:id="@+id/report_back"
+            android:textSize="16dp"
+            android:textColor="#AAFFFFFF"
+            android:typeface="monospace"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

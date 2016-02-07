@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_root"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/blank"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/relativeLayout3">
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rl3"
+                android:layout_centerHorizontal="true">
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Mission"
+            android:id="@+id/brief_title"
+            android:textSize="30dp"
+            android:typeface="monospace"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/brief_title"
+            android:id="@+id/brief_sv"
+            android:fadeScrollbars="false"
+            android:paddingRight="6dp"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbarSize="0dip"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbarThumbVertical="@drawable/scroll"
+            android:layout_marginTop="6dp">
+            <com.jp.cowsnbulls.Typewriter
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/mission_brief"
+                android:id="@+id/brief_text"
+                android:layout_marginTop="8dp"
+                android:textSize="16dp"
+                android:textColor="#AAFFFFFF"
+                android:typeface="monospace"
+                android:layout_below="@+id/menu_title"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"/>
+
+        </ScrollView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back To Menu"
+            android:id="@+id/brief_back"
+            android:textSize="16dp"
+            android:layout_marginTop="8dp"
+            android:textColor="#AAFFFFFF"
+            android:typeface="monospace"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
