@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/rl_body"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -35,19 +36,21 @@
         <android.support.v7.widget.CardView
             android:id="@+id/console"
             android:layout_gravity="center"
-            android:layout_width="fill_parent"
-            android:layout_height="140dp"
-            android:background="@drawable/card_background_layout"
-            android:layout_above="@+id/slider"
+            app:cardBackgroundColor="#DDFFFFFF"
             android:layout_centerHorizontal="true"
-            android:layout_marginRight="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="15dp">
+            android:layout_marginBottom="10dp"
+            android:layout_above="@id/slider"
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
+                android:id="@+id/console_slider"
                 android:layout_centerVertical="true">
+
                 <RelativeLayout
                     android:id="@+id/rl_input"
                     android:layout_width="wrap_content"
@@ -55,6 +58,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="20dp"
                     android:gravity="center" >
+
 
                     <TextView
                         android:id="@+id/d_3"
@@ -119,6 +123,8 @@
                         android:textSize="30sp"
                         android:textColorHint="#aaffffff"/>
 
+
+
                     <RelativeLayout
                         android:layout_width="46dp"
                         android:layout_height="2dp"
@@ -158,25 +164,80 @@
                         android:layout_alignStart="@+id/d_4"
                         android:layout_marginLeft="12dp"/>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="1"
+                        android:id="@+id/h1"
+                        android:textSize="10sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignLeft="@+id/cur1"
+                        android:layout_alignStart="@+id/cur1"
+                        android:layout_marginLeft="18dp"
+                        android:layout_marginStart="18dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="2"
+                        android:id="@+id/h2"
+                        android:textSize="10sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignRight="@+id/cur2"
+                        android:layout_alignEnd="@+id/cur2"
+                        android:layout_marginRight="19dp"
+                        android:layout_marginEnd="19dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="3"
+                        android:id="@+id/h3"
+                        android:textSize="10sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignLeft="@+id/cur3"
+                        android:layout_alignStart="@+id/cur3"
+                        android:layout_marginLeft="17dp"
+                        android:layout_marginStart="17dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="4"
+                        android:id="@+id/h4"
+                        android:textSize="10sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignRight="@+id/cur4"
+                        android:layout_alignEnd="@+id/cur4"
+                        android:layout_marginRight="18dp"
+                        android:layout_marginEnd="18dp"/>
+
+
                 </RelativeLayout>
 
+
+
                 <Button
-                    android:id="@+id/new_game"
+                    android:id="@+id/decrypt"
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_below="@+id/rl_input"
-                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:text="Decrypt"
-                    android:visibility="gone"
-                    android:background="@drawable/parts"/>
+                    android:background="@drawable/parts"
+                    android:visibility="gone"/>
 
                 <RelativeLayout
                     android:id="@+id/rl_result"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/new_game"
-                    android:layout_marginLeft="30sp">
+                    android:layout_below="@+id/decrypt"
+                    android:layout_marginLeft="30sp"
+                    android:layout_marginBottom="18dp">
 
                     <TextView
                         android:id="@+id/pointer1"
@@ -231,11 +292,11 @@
 
         <SeekBar
             android:layout_width="wrap_content"
-            android:layout_height="44dp"
+            android:layout_height="24dp"
             android:id="@+id/slider"
             android:max="9"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
             android:indeterminate="false"
             android:thumb="@drawable/red_scrubber_control"
             android:progressDrawable="@drawable/red_scrubber_progress"
@@ -245,6 +306,7 @@
             android:layout_alignParentLeft="true"/>
 
         <include layout="@layout/footer_icons_2"/>
+
 
 
     </RelativeLayout>

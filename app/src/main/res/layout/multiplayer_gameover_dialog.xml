@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_root"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:id="@+id/relativeLayout4">
+
+
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Game_Status"
+                android:id="@+id/game_status"
+                android:textSize="30dp"
+                android:typeface="monospace"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="winner_moves"
+                android:id="@+id/winner_moves"
+                android:textSize="14dp"
+                android:textColor="#AAFFFFFF"
+                android:layout_marginTop="18dp"
+                android:layout_below="@id/game_status"
+                android:typeface="monospace"
+                android:layout_centerHorizontal="true"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/winner_moves"
+                android:layout_marginTop="53dp"
+                android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Replay"
+                    android:id="@+id/replay"
+                    android:textSize="18dp"
+                    android:textColor="#AAFFFFFF"
+                    android:typeface="monospace"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Main Menu"
+                android:id="@+id/multiplayer_gameover_back"
+                android:layout_marginLeft="34dp"
+                android:textSize="18dp"
+                android:textColor="#AAFFFFFF"
+                android:typeface="monospace"
+                android:layout_centerHorizontal="true"/>
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

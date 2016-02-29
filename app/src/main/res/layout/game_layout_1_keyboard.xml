@@ -22,7 +22,7 @@
             android:typeface="monospace"
             android:gravity="left"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/console"
+            android:layout_below="@+id/console_in"
             android:layout_above="@+id/rl_footerIcons"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
@@ -36,11 +36,9 @@
             android:id="@+id/console"
             android:layout_gravity="center"
             android:layout_width="fill_parent"
-            android:layout_height="190dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="15dp"
-            android:layout_marginTop="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/card_background_layout">
 
             <RelativeLayout
@@ -49,7 +47,9 @@
                 android:layout_centerHorizontal="true"
                 android:id="@+id/console_slider"
                 android:layout_centerVertical="true">
+
                 <RelativeLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/rl_input"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -57,9 +57,11 @@
                     android:layout_marginTop="20dp"
                     android:gravity="center" >
 
+
                     <EditText
                         android:id="@+id/d_3"
                         android:layout_width="70dp"
+                        android:selectAllOnFocus="true"
                         android:layout_height="70dp"
                         android:layout_alignParentTop="true"
                         android:layout_marginRight="2dp"
@@ -77,6 +79,7 @@
                         android:id="@+id/d_2"
                         android:layout_width="70dp"
                         android:layout_height="70dp"
+                        android:selectAllOnFocus="true"
                         android:layout_alignParentTop="true"
                         android:layout_marginRight="2dp"
                         android:layout_toRightOf="@+id/d_1"
@@ -94,6 +97,7 @@
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_alignParentTop="true"
+                        android:selectAllOnFocus="true"
                         android:layout_marginRight="2dp"
                         android:background="@drawable/bg"
                         android:ems="10"
@@ -109,6 +113,7 @@
                     <EditText
                         android:id="@+id/d_4"
                         android:layout_width="70dp"
+                        android:selectAllOnFocus="true"
                         android:layout_height="70dp"
                         android:layout_alignParentTop="true"
                         android:layout_toRightOf="@+id/d_3"
@@ -120,6 +125,8 @@
                         android:textColor="#111"
                         android:textSize="30sp"
                         android:textColorHint="#aaffffff"/>
+
+
 
                     <RelativeLayout
                         android:layout_width="46dp"
@@ -160,6 +167,59 @@
                         android:layout_alignStart="@+id/d_4"
                         android:layout_marginLeft="12dp"/>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="1"
+                        android:id="@+id/h1"
+                        android:textSize="10sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignLeft="@+id/cur1"
+                        android:layout_alignStart="@+id/cur1"
+                        android:layout_marginLeft="18dp"
+                        android:layout_marginStart="18dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="2"
+                        android:id="@+id/h2"
+                        android:textSize="10sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignRight="@+id/cur2"
+                        android:layout_alignEnd="@+id/cur2"
+                        android:layout_marginRight="19dp"
+                        android:layout_marginEnd="19dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="3"
+                        android:id="@+id/h3"
+                        android:textSize="10sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignLeft="@+id/cur3"
+                        android:layout_alignStart="@+id/cur3"
+                        android:layout_marginLeft="17dp"
+                        android:layout_marginStart="17dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="4"
+                        android:id="@+id/h4"
+                        android:textSize="10sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignRight="@+id/cur4"
+                        android:layout_alignEnd="@+id/cur4"
+                        android:layout_marginRight="18dp"
+                        android:layout_marginEnd="18dp"/>
+
+
                 </RelativeLayout>
 
                 <Button
@@ -177,6 +237,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/decrypt"
+                    android:layout_marginBottom="18dp"
                     android:layout_marginLeft="30sp">
 
                     <TextView
@@ -210,17 +271,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_marginBottom="6dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_below="@+id/console"
             android:layout_alignLeft="@+id/console"
             android:layout_alignStart="@+id/console"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true">
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@+id/tw_bg">
 
             <LinearLayout
                 android:id="@+id/ll_feed"
                 android:layout_width="match_parent"
-                android:layout_margin="10dp"
-                android:layout_marginBottom="5dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center" >
@@ -228,7 +291,6 @@
         </ScrollView>
 
         <include layout="@layout/footer_icons_1"/>
-
     </RelativeLayout>
 
 </RelativeLayout>

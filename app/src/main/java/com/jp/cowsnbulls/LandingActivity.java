@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
 
 import java.util.Random;
 
@@ -59,6 +61,8 @@ public class LandingActivity extends Activity {
     private String l_selected = "";
     boolean t_selected = false;
 
+
+
     @Override
     public void onBackPressed() {
         return;
@@ -81,6 +85,7 @@ public class LandingActivity extends Activity {
         TextView title = (TextView) findViewById(R.id.title);
         TextView new_game = (TextView) findViewById(R.id.new_game);
         TextView objective = (TextView) findViewById(R.id.objective);
+        TextView multiplayer_game = (TextView) findViewById(R.id.multiplayer_game);
         TextView report = (TextView) findViewById(R.id.report);
         TextView settings = (TextView) findViewById(R.id.settings);
         TextView training = (TextView) findViewById(R.id.training);
@@ -256,9 +261,9 @@ public class LandingActivity extends Activity {
 
                 String st = "File #: 0310848664523\nAlias: Agent B\nReal name: CLASSIFIED\nAge: 26\n\nHandler: Agent O\n" +
                         "Nationality: CLASSIFIED\n\n# of Missions: "+ Integer.toString(d3)+ "\n# of Moves per Mission: " + Integer.toString(d4) +
-                        "\nBest mission: " + Integer.toString(d1) + " moves"+history;
+                        "\nBest mission: " + Integer.toString(d1) + " moves"+history + "\n\n";
 
-                report_text.setCharacterDelay(5);
+                report_text.setCharacterDelay(2);
                 report_text.animateText(st);
                 report_back.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
@@ -297,8 +302,8 @@ public class LandingActivity extends Activity {
 
                 String st = getResources().getString(R.string.training);
 
-                training_text.setCharacterDelay(5);
-                training_text.animateText(st);
+                training_text.setCharacterDelay(0);
+                training_text.setText(st);
 
                 training_back.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
@@ -513,9 +518,19 @@ public class LandingActivity extends Activity {
         //Colorify Menu
         title.setTextColor(Color.parseColor(bg[bg_index]));
 
+        //New Game
         new_game.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent i = new Intent(LandingActivity.this,GameActivity.class);
+                Intent i = new Intent(LandingActivity.this, GameActivity.class);
+                startActivity(i);
+            }
+
+        });
+
+        //Multiplayer Game
+        multiplayer_game.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent i = new Intent(LandingActivity.this,MultiPlayerActivity.class);
                 startActivity(i);
             }
 

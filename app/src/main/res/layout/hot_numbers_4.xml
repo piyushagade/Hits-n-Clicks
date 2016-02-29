@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+android:layout_width="wrap_content"
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_height="wrap_content"
+android:gravity="center"
+android:layout_alignLeft="@+id/rl_input"
+android:layout_alignStart="@+id/rl_input"
+android:paddingTop="14sp"
+android:layout_alignRight="@+id/rl_input"
+android:layout_alignEnd="@+id/rl_input"
+android:id="@+id/rl_hot">
+
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="360sp"
+    android:layout_height="wrap_content"
+    android:weightSum="4"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="1"
+        android:id="@+id/hot_1"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="10sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="2"
+        android:id="@+id/hot_2"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="10sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="3"
+        android:id="@+id/hot_3"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="10sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="4"
+        android:id="@+id/hot_4"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="10sp"/>
+</LinearLayout>
+</RelativeLayout>

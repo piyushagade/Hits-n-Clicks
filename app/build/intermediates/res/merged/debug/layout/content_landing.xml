@@ -137,6 +137,7 @@
                     android:gravity="right"
                     android:layout_alignParentRight="true"/>
 
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -158,9 +159,25 @@
                     android:textColor="#AAFFFFFF"
                     android:layout_marginTop="15dp"
                     android:id="@+id/report"
-                    android:layout_below="@+id/objective"
+                    android:layout_below="@+id/multiplayer_game"
                     android:typeface="monospace"
                     android:textSize="24sp"
+                    android:layout_alignParentRight="true"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Multiplayer"
+                    android:textColor="#AAFFFFFF"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/multiplayer_game"
+                    android:layout_below="@+id/objective"
+                    android:typeface="monospace"
+                    android:textSize="26sp"
+                    android:gravity="right"
                     android:layout_alignParentRight="true"/>
 
                 <TextView
@@ -238,7 +255,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/splash"
-        android:id="@+id/rl_splash">
+        android:id="@+id/rl_splash"
+        android:visibility="invisible">
 
         <ImageView
             android:layout_width="150sp"
@@ -256,7 +274,6 @@
             android:layout_marginTop="70dp"
             android:textColor="#fabc3d"
             android:textSize="120dp"
-            android:text="....."
             android:layout_alignTop="@+id/splash_logo"
             android:layout_centerHorizontal="true"/>
     </RelativeLayout>

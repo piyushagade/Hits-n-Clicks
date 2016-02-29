@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_root"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:id="@+id/relativeLayout4">
+
+
+
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/training_sv"
+            android:fillViewport="false"
+            android:fadeScrollbars="false"
+            android:paddingRight="6dp"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbarSize="0dip"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbarThumbVertical="@drawable/scroll"
+            android:layout_marginTop="6dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_above="@+id/multiplayer_back">
+
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rl_multiplayer_form">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create Server"
+                    android:id="@+id/multiplayer_title"
+                    android:textSize="30dp"
+                    android:typeface="monospace"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Enter server name."
+                    android:typeface="monospace"
+                    android:textColor="#88FFFFFF"
+                    android:id="@+id/server_name_label"
+                    android:layout_below="@id/multiplayer_title"
+                    android:layout_marginTop="15dp"/>
+
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="42dp"
+                    android:id="@+id/server_name"
+                    android:layout_alignTop="@+id/server_name_label"
+                    android:layout_alignParentLeft="true"
+                    android:hint="Server name"
+                    android:typeface="monospace"
+                    android:background="@drawable/console_output_darktheme"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="29dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"/>
+
+
+                <Button
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
+                    android:text="Create"
+                    android:typeface="monospace"
+                    android:id="@+id/multiplayer_begin"
+                    android:background="#66FFFFFF"
+                    android:layout_alignTop="@+id/server_name"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-OR-"
+                    android:id="@+id/multiplayer_or"
+                    android:textSize="22dp"
+                    android:textColor="#46FFFFFF"
+                    android:layout_marginTop="24dp"
+                    android:typeface="monospace"
+                    android:layout_below="@id/server_name"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Join Server"
+                    android:id="@+id/join_multiplayer_title"
+                    android:textSize="30sp"
+                    android:layout_below="@id/multiplayer_or"
+                    android:typeface="monospace"
+                    android:layout_marginTop="24dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#88FFFFFF"
+                    android:typeface="monospace"
+                    android:text="Enter server name to join."
+                    android:layout_below="@id/join_multiplayer_title"
+                    android:id="@+id/join_server_name_label"
+                    android:layout_marginTop="15dp"/>
+
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="42dp"
+                    android:id="@+id/join_server_name"
+                    android:layout_alignTop="@+id/join_server_name_label"
+                    android:layout_alignParentLeft="true"
+                    android:hint="Server name"
+                    android:typeface="monospace"
+                    android:background="@drawable/console_output_darktheme"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="29dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"/>
+
+
+                <Button
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
+                    android:text="Join"
+                    android:typeface="monospace"
+                    android:id="@+id/join_multiplayer_begin"
+                    android:background="#66FFFFFF"
+                    android:layout_alignTop="@+id/join_server_name"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"/>
+            </RelativeLayout>
+
+        </ScrollView>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rl_wait"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Waiting for opponent."
+                android:id="@+id/waiting_title"
+                android:textSize="22sp"
+                android:typeface="monospace"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Waiting for opponent."
+                android:id="@+id/waiting_text"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/waiting_title"
+                android:layout_marginTop="12dp"
+                android:textColor="#66FFFFFF"
+                android:textSize="16sp"
+                android:typeface="monospace"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back To Menu"
+            android:id="@+id/multiplayer_back"
+            android:textSize="16dp"
+            android:layout_marginTop="8dp"
+            android:textColor="#AAFFFFFF"
+            android:typeface="monospace"
+            android:layout_alignParentBottom="true"/>
+
+
+
+    </RelativeLayout>
+
+</RelativeLayout>
