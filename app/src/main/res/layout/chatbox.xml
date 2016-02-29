@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/rl_notifications"
+    android:paddingBottom="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:id="@+id/chatbox"
+        android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
+        android:background="#FF000000"
+        android:alpha="0.98"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="136sp"
+            android:background="@drawable/card_background_layout_darktheme"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:paddingLeft="8dp"
+                android:hint="type message here.."
+                android:textColorHint="#66AAAAAA"
+                android:background="#44FFFFFF"
+                android:id="@+id/et_message"
+                android:layout_toLeftOf="@+id/b_message_send"
+                android:layout_toStartOf="@+id/b_message_send"/>
+
+            <Button
+                android:layout_width="60sp"
+                android:layout_height="40dp"
+                android:text="Send"
+                android:background="#76FFFFFF"
+                android:textSize="16dp"
+                android:textColor="#AAFFFFFF"
+                android:typeface="monospace"
+                android:layout_alignTop="@+id/et_message"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/b_message_send"/>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/et_message"
+                android:layout_marginTop="8sp"
+                android:padding="6dp"
+                android:background="#22FFFFFF">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/received_message"
+                    android:typeface="monospace"
+                    android:textSize="16sp"
+                    android:textColor="#BBFFFFFF"/>
+            </ScrollView>
+
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rl_chatbox_close"
+        android:layout_below="@+id/chatbox">
+
+        <Button
+            android:layout_width="38sp"
+            android:layout_height="34dp"
+            android:text="X"
+            android:background="#66FFFFFF"
+            android:textColor="#88FFFFFF"
+            android:textSize="16dp"
+            android:alpha="0.98"
+            android:typeface="monospace"
+            android:layout_marginRight="8dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/b_chatbox_close"/>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

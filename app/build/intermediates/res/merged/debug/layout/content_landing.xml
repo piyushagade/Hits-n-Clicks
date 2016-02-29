@@ -272,7 +272,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/load_progress"
             android:layout_marginTop="70dp"
-            android:textColor="#fabc3d"
+            android:textColor="#c7de08"
             android:textSize="120dp"
             android:layout_alignTop="@+id/splash_logo"
             android:layout_centerHorizontal="true"/>

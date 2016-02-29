@@ -8,6 +8,8 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +23,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -55,7 +58,11 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 
 	Typewriter tv_bulls, tw_bg;
 	LinearLayout rl_feed;
-	RelativeLayout rl_body, rl_bg;
+	RelativeLayout rl_body, rl_bg, rl_chatbox, rl_notification;
+
+    Button b_message_send, b_chatbox_close;
+    EditText et_message;
+    TextView received_message;
 
 	String temp_inputmethod="", temp_layout="";
 	private String l_selected = "";
@@ -123,6 +130,8 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 	boolean server;
 	private  boolean decryptDisable;
 	private Dialog multiplayer_gameover_dialog = null;
+    private boolean chat_stat;
+	private String joiner_bulls, joiner_cows, server_bulls, server_cows;
 
 
 	////////////////////////////////////
@@ -166,13 +175,14 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 			multiplayer_gameover_dialog.dismiss();
 		}
 
-		if(server)fb.child("server_away").setValue("true");
+		if(server&&fb!=null)fb.child("server_away").setValue("true");
 		else {
 			if(fb!=null){
                 fb.child("joiner_away").setValue("true");
 			    fb.child("joiner_connected").setValue("false");
             }
 		}
+//		if(fb!=null)fb.removeValue();
 	}
 
 	@Override
@@ -375,6 +385,16 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 				}
 			});
 
+        //Chatbox
+        rl_notification = (RelativeLayout) findViewById(R.id.rl_notifications);
+        rl_chatbox = (RelativeLayout) findViewById(R.id.chatbox);
+        rl_notification.setVisibility(View.GONE);
+        b_message_send = (Button) findViewById(R.id.b_message_send);
+        b_chatbox_close = (Button) findViewById(R.id.b_chatbox_close);
+        et_message = (EditText) findViewById(R.id.et_message);
+        received_message = (TextView) findViewById(R.id.received_message);
+
+
 		// Read Shared Preferences Statistics
 		leastMoves = sp_stats.getInt("highscore", 10000);
 		no_games = sp_stats.getInt("GAMES", 0);
@@ -386,7 +406,8 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 		console = (CardView) findViewById(R.id.console);
 
 		i_reload = (ImageButton) findViewById(R.id.i_reload);
-		i_reload.setVisibility(View.INVISIBLE);
+		i_reload.setBackgroundResource(R.drawable.chatbox);
+
 		i_scores = (ImageButton) findViewById(R.id.i_scores);
 		i_menu = (ImageButton) findViewById(R.id.i_menu);
 		i_mute = (ImageButton) findViewById(R.id.i_mute);
@@ -450,105 +471,190 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 		// When New Server is needed to be created
 		multiplayer_begin.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				if(!server_name.getText().toString().equals("")) {
+					server = true;
 
-				server = true;
+					//random digits generator
+					randDigitsGenerator();
 
-				//random digits generator
-				randDigitsGenerator();
+					//Create Firebase Game
+					fb = new Firebase("https://hitsnclicks.firebaseio.com/" + server_name.getText().toString());
 
-				//Create Firebase Game
-				fb = new Firebase("https://hitsnclicks.firebaseio.com/" + server_name.getText().toString());
+					fb.child("rno_0").setValue(String.valueOf(rno[0]));
+					fb.child("rno_1").setValue(String.valueOf(rno[1]));
+					fb.child("rno_2").setValue(String.valueOf(rno[2]));
+					fb.child("rno_3").setValue(String.valueOf(rno[3]));
 
-				fb.child("rno_0").setValue(String.valueOf(rno[0]));
-				fb.child("rno_1").setValue(String.valueOf(rno[1]));
-				fb.child("rno_2").setValue(String.valueOf(rno[2]));
-				fb.child("rno_3").setValue(String.valueOf(rno[3]));
+					//Write Data
+					fb.child("server_name").setValue(server_name.getText().toString());
+					fb.child("winner").setValue("");
+					fb.child("winner_moves").setValue("");
+					fb.child("turn").setValue("joiner");
+					fb.child("joiner_bulls").setValue("");
+					fb.child("server_bulls").setValue("");
+					fb.child("joiner_cows").setValue("");
+					fb.child("server_cows").setValue("");
+					fb.child("server_away").setValue("false");
+					fb.child("joiner_away").setValue("false");
+					fb.child("joiner_connected").setValue("false");
+					fb.child("parties_connected").setValue("false");
+					fb.child("server_message").setValue("");
+					fb.child("joiner_message").setValue("");
 
-				//Write Data
-				fb.child("server_name").setValue(server_name.getText().toString());
-				fb.child("winner").setValue("");
-				fb.child("winner_moves").setValue("");
-				fb.child("turn").setValue("joiner");
-				fb.child("joiner_bulls").setValue("");
-				fb.child("server_bulls").setValue("");
-				fb.child("joiner_cows").setValue("");
-				fb.child("server_cows").setValue("");
-				fb.child("server_away").setValue("false");
-				fb.child("joiner_away").setValue("false");
-				fb.child("joiner_connected").setValue("false");
-
-				//Turn Listener
-				fb.child("turn").addValueEventListener(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot snapshot) {
-						System.out.println(snapshot.getValue());
-						if (snapshot != null) {
-							String turn = String.valueOf(snapshot.getValue());
-
-							if (turn.equals("joiner")) decryptDisable = true;
-							else decryptDisable = false;
-						}
-					}
-
-					@Override
-					public void onCancelled(FirebaseError error) {
-					}
-				});
-
-
-				//Game Status Listener
-				fb.child("winner").addValueEventListener(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot snapshot) {
-						System.out.println(snapshot.getValue());
-						if (snapshot != null) {
-							String winner = String.valueOf(snapshot.getValue());
-
-							if (winner.equals("server")) showGameOverDialog("won");
-							else if (winner.equals("joiner")) showGameOverDialog("lost");
-						}
-					}
-
-					@Override
-					public void onCancelled(FirebaseError error) {
-					}
-				});
-
-				//Start Waiting for Joiner Animation
-				final RelativeLayout rl_form = (RelativeLayout) multiplayer_dialog.findViewById(R.id.rl_multiplayer_form);
-				final RelativeLayout rl_wait = (RelativeLayout) multiplayer_dialog.findViewById(R.id.rl_wait);
-                TextView waiting_title = (TextView) multiplayer_dialog.findViewById(R.id.waiting_title);
-                TextView waiting_text = (TextView) multiplayer_dialog.findViewById(R.id.waiting_text);
-				rl_form.setVisibility(View.GONE);
-				rl_wait.setVisibility(View.VISIBLE);
-                waiting_title.setText("Waiting for opponent.");
-                waiting_text.setText("Server: " + server_name.getText().toString()
-                        + "\nStatus: Active\nUptime: <10 min\nSignal: -23dB");
-
-                waiting_title.setTextColor(Color.parseColor(bg[bg_index]));
-                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-                animateTv(waiting_title, Animation.INFINITE);
-
-				//Close Multiplayer Dialog on Joiner Connected
-				fb.child("joiner_connected").addValueEventListener(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot snapshot) {
-						System.out.println(snapshot.getValue());
-						if (snapshot != null) {
-							String status = String.valueOf(snapshot.getValue());
-
-							if (status.equals("true")) {
-								multiplayer_dialog.cancel();
-								rl_wait.setVisibility(View.GONE);
+					//Joiner's Current Bulls & Cows Listener
+					if (fb != null)
+						fb.child("joiner_bulls").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									joiner_bulls = String.valueOf(snapshot.getValue());
+								}
 							}
-						}
-					}
 
-					@Override
-					public void onCancelled(FirebaseError error) {
-					}
-				});
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+
+					if (fb != null)
+						fb.child("joiner_cows").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									joiner_cows = String.valueOf(snapshot.getValue());
+								}
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+
+					//Turn Listener
+					if (fb != null)
+						fb.child("turn").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									String turn = String.valueOf(snapshot.getValue());
+									if (turn.equals("server")) {
+										consoleTextAnim("your turn.", 700, 40);
+										if (joiner_bulls != null && joiner_cows != null && !joiner_bulls.equals("") && !joiner_cows.equals("")) {
+											consoleTextAnim("opponent's score:", 2000, 20);
+											consoleTextAnim("Hits: " + joiner_bulls + " && Clicks: " + joiner_cows, 4000, 20);
+											consoleTextAnim("your turn.", 8000, 40);
+										}
+
+									} else {
+										consoleTextAnim("opponent's turn.", 2700, 40);
+//								consoleTextAnim("", 8000, 40);
+									}
+
+									if (turn.equals("joiner")) decryptDisable = true;
+									else decryptDisable = false;
+								}
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+
+					//Joiner Message Listener
+					if (fb != null)
+						fb.child("joiner_message").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									received_message.setText(String.valueOf(snapshot.getValue()));
+
+									if (!String.valueOf(snapshot.getValue().toString())
+											.equals("")) {
+										rl_notification.setVisibility(View.VISIBLE);
+										chat_stat = true;
+										playNotification();
+									}
+								}
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+
+					//Joiner Connectivity Listener
+					if (fb != null)
+						fb.child("joiner_away").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null)
+									if (snapshot.getValue().toString().equals("true")) {
+										//Joiner is not in game
+										showGameOverDialog("opponent_left");
+									}
+
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+
+
+					//Game Status Listener
+					if (fb != null)
+						fb.child("winner").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									String winner = String.valueOf(snapshot.getValue());
+
+									if (winner.equals("server")) showGameOverDialog("won");
+									else if (winner.equals("joiner")) showGameOverDialog("lost");
+								}
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+
+					//Start Waiting for Joiner Animation
+					final RelativeLayout rl_form = (RelativeLayout) multiplayer_dialog.findViewById(R.id.rl_multiplayer_form);
+					final RelativeLayout rl_wait = (RelativeLayout) multiplayer_dialog.findViewById(R.id.rl_wait);
+					TextView waiting_title = (TextView) multiplayer_dialog.findViewById(R.id.waiting_title);
+					TextView waiting_text = (TextView) multiplayer_dialog.findViewById(R.id.waiting_text);
+					rl_form.setVisibility(View.GONE);
+					rl_wait.setVisibility(View.VISIBLE);
+					waiting_title.setText("Waiting for opponent.");
+					waiting_text.setText("Server: " + server_name.getText().toString()
+							+ "\nStatus: Active\nUptime: <10 min\nSignal: -23dB");
+
+					waiting_title.setTextColor(Color.parseColor(bg[bg_index]));
+					InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+					imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+					animateTv(waiting_title, Animation.INFINITE);
+
+					//Close Multiplayer Dialog on Joiner Connected
+					if (fb != null)
+						fb.child("joiner_connected").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									String status = String.valueOf(snapshot.getValue());
+
+									if (status.equals("true")) {
+										multiplayer_dialog.cancel();
+										rl_wait.setVisibility(View.GONE);
+									}
+								}
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+				}
 			}
 
 		});
@@ -556,107 +662,188 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 		// When Server is needed to be joined
 		join_multiplayer_begin.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				multiplayer_dialog.cancel();
-				menu_ID = 0;
+				if(!join_server_name.getText().toString().equals("")) {
+					multiplayer_dialog.cancel();
+					menu_ID = 0;
 
-				server = false;
+					server = false;
 
-				//Join Game
-				fb = new Firebase("https://hitsnclicks.firebaseio.com/"+join_server_name.getText().toString());
+					//Join Game
+					fb = new Firebase("https://hitsnclicks.firebaseio.com/" + join_server_name.getText().toString());
 
-				//Write Data
-				fb.child("server_name").setValue(join_server_name.getText().toString());
-				fb.child("joiner_connected").setValue("true");
+					//Write Data
+					fb.child("server_name").setValue(join_server_name.getText().toString());
+					fb.child("joiner_connected").setValue("true");
 
-				//Read Data
-				fb.child("rno_0").addValueEventListener(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot snapshot) {
-						System.out.println(snapshot.getValue());
-						if (snapshot != null)
-							rno[0] = String.valueOf(snapshot.getValue().toString());
+					//Server Connectivity Listener
+					if (fb != null)
+						fb.child("server_away").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null)
+									if (snapshot.getValue().toString().equals("true")) {
+										//Server is not in game
+										showGameOverDialog("opponent_left");
+									}
 
-					}
+							}
 
-					@Override
-					public void onCancelled(FirebaseError error) {
-					}
-				});
-				fb.child("rno_1").addValueEventListener(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot snapshot) {
-						System.out.println(snapshot.getValue());
-						if (snapshot != null)
-							rno[1] = String.valueOf(snapshot.getValue().toString());
-					}
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
 
-					@Override
-					public void onCancelled(FirebaseError error) {
-					}
-				});
-				fb.child("rno_2").addValueEventListener(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot snapshot) {
-						System.out.println(snapshot.getValue());
-						if (snapshot != null)
-							rno[2] = String.valueOf(snapshot.getValue().toString());
-					}
+					//Read Data
+					if (fb != null)
+						fb.child("rno_0").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null)
+									rno[0] = String.valueOf(snapshot.getValue().toString());
 
-					@Override
-					public void onCancelled(FirebaseError error) {
-					}
-				});
-				fb.child("rno_3").addValueEventListener(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot snapshot) {
-						System.out.println(snapshot.getValue());
-						if (snapshot != null)
-							rno[3] = String.valueOf(snapshot.getValue().toString());
-					}
+							}
 
-					@Override
-					public void onCancelled(FirebaseError error) {
-					}
-				});
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+					if (fb != null)
+						fb.child("rno_1").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null)
+									rno[1] = String.valueOf(snapshot.getValue().toString());
+							}
 
-				//Turn Listener
-				fb.child("turn").addValueEventListener(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot snapshot) {
-						System.out.println(snapshot.getValue());
-						if (snapshot != null) {
-							String turn = String.valueOf(snapshot.getValue());
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
 
-							if (turn.equals("joiner")) decryptDisable = false;
-							else decryptDisable = true;
-						}
-					}
+					if (fb != null)
+						fb.child("rno_2").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null)
+									rno[2] = String.valueOf(snapshot.getValue().toString());
+							}
 
-					@Override
-					public void onCancelled(FirebaseError error) {
-					}
-				});
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+					if (fb != null)
+						fb.child("rno_3").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null)
+									rno[3] = String.valueOf(snapshot.getValue().toString());
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+
+					//Server Current Bulls & Cows Listener
+					if (fb != null)
+						fb.child("server_bulls").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									server_bulls = String.valueOf(snapshot.getValue());
+								}
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+
+					if (fb != null)
+						fb.child("server_cows").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									server_cows = String.valueOf(snapshot.getValue());
+								}
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+
+					//Turn Listener
+					if (fb != null)
+						fb.child("turn").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									String turn = String.valueOf(snapshot.getValue());
+									if (turn.equals("joiner")) {
+										consoleTextAnim("your turn.", 700, 40);
+										if (server_bulls != null && server_cows != null && !server_bulls.equals("") && !server_cows.equals("")) {
+											consoleTextAnim("opponent's score:", 2000, 20);
+											consoleTextAnim("Hits: " + server_bulls + " && Clicks: " + server_cows, 4000, 20);
+											consoleTextAnim("your turn.", 8000, 40);
+										}
+									} else {
+										consoleTextAnim("opponent's turn.", 2700, 40);
+//								consoleTextAnim("", 8000, 40);
+									}
+
+									if (turn.equals("joiner")) decryptDisable = false;
+									else decryptDisable = true;
+								}
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+
+					//Server Message Listener
+					if (fb != null)
+						fb.child("server_message").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									received_message.setText(String.valueOf(snapshot.getValue()));
+
+									if (!String.valueOf(snapshot.getValue().toString())
+											.equals("")) {
+										rl_notification.setVisibility(View.VISIBLE);
+										chat_stat = true;
+										playNotification();
+									}
+								}
+							}
+
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
 
 
+					//Game Status Listener
+					if (fb != null)
+						fb.child("winner").addValueEventListener(new ValueEventListener() {
+							@Override
+							public void onDataChange(DataSnapshot snapshot) {
+								if (snapshot != null) {
+									String winner = String.valueOf(snapshot.getValue());
 
+									if (winner.equals("joiner")) showGameOverDialog("won");
+									else if (winner.equals("server")) showGameOverDialog("lost");
+								}
+							}
 
-				//Game Status Listener
-				fb.child("winner").addValueEventListener(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot snapshot) {
-						System.out.println(snapshot.getValue());
-						if (snapshot != null) {
-							String winner = String.valueOf(snapshot.getValue());
-
-							if (winner.equals("joiner"))  showGameOverDialog("won");
-							else if (winner.equals("server")) showGameOverDialog("lost");
-						}
-					}
-
-					@Override
-					public void onCancelled(FirebaseError error) {
-					}
-				});
+							@Override
+							public void onCancelled(FirebaseError error) {
+							}
+						});
+				}
 
 			}
 
@@ -913,22 +1100,51 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 			});
 
 
-
-
-		i_reload.setOnClickListener(new View.OnClickListener() {
+        //Toggle Chatbox
+        chat_stat = false;
+        i_reload.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (!restartPending) {
-					rl_feed.removeAllViews();
-					rl_feed.setVisibility(View.INVISIBLE);
-					reInitializeGame();
+				if (!chat_stat) {
+					rl_notification.setVisibility(View.VISIBLE);
+					chat_stat = true;
 				} else {
-					Intent i = new Intent(MultiPlayerActivity.this, MultiPlayerActivity.class);
-					startActivity(i);
-					finish();
+					rl_notification.setVisibility(View.GONE);
+					chat_stat = false;
 				}
 			}
 
 		});
+
+		if(darkTheme)b_chatbox_close.setBackgroundColor(Color.parseColor(bg[bg_index]));
+		else b_chatbox_close.setBackgroundColor(Color.parseColor("#FF000000"));
+        if(darkTheme)rl_chatbox.setBackgroundColor(Color.parseColor(bg[bg_index]));
+		else rl_chatbox.setBackgroundColor(Color.parseColor("#FF000000"));
+
+        b_chatbox_close.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (!chat_stat) {
+                    rl_notification.setVisibility(View.VISIBLE);
+                    chat_stat = true;
+                } else {
+                    rl_notification.setVisibility(View.GONE);
+                    chat_stat = false;
+                }
+            }
+
+        });
+
+
+        //Message Send
+        b_message_send.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(server&&!et_message.getText().toString().equals("")&&fb!=null) fb.child("server_message").setValue(et_message.getText().toString());
+                else if(!server&&!et_message.getText().toString().equals("")&&fb!=null) fb.child("joiner_message").setValue(et_message.getText().toString());
+                et_message.setText("");
+            }
+
+        });
+
+
 
 		i_scores.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -1064,7 +1280,34 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 
 	}
 
-	private void reInitializeGame() {
+    private void playNotification(){
+//        try {
+//                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+//                r.play();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+    }
+
+    private void hideChatbox(){
+        final Animation animFO = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+        final Handler handler = new Handler();
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                rl_chatbox.startAnimation(animFO);
+                rl_chatbox.setVisibility(View.GONE);
+            }
+        }, 3600);
+    }
+
+    private void showNotification(String message) {
+
+    }
+
+    private void reInitializeGame() {
 		//Set Accent Color
 		// Random Digits Generator
 		r = new Random();
@@ -1101,6 +1344,13 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 		final TextView input_selected = (TextView)menu.findViewById(R.id.input_selected);
 		final TextView layout_selected = (TextView)menu.findViewById(R.id.layout_selected);
 		final TextView theme_selected = (TextView)menu.findViewById(R.id.theme_selected);
+
+		layout.setVisibility(View.GONE);
+		input.setVisibility(View.GONE);
+		theme.setVisibility(View.GONE);
+		input_selected.setVisibility(View.GONE);
+		layout_selected.setVisibility(View.GONE);
+		theme_selected.setVisibility(View.GONE);
 
 		//Colorify Menu
 		d_title.setTextColor(accent);
@@ -1452,6 +1702,8 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 			if(inputMethod.equals("slider"))sb.setProgress(0);
 		}
 
+        //Chatbox Theme
+        rl_chatbox.setBackgroundColor(Color.parseColor(bg[bg_index]));
 
 		// Theme/Background Color
 		if(darkTheme) {
@@ -1505,11 +1757,8 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 		detector = new SimpleGestureFilter(this,this);
 
 		// Typewriter animation
-		consoleTextAnim("booting code breaker -d", 2000, 40);
-		consoleTextAnim("user: nira_ag_b", 6000, 25);
-		consoleTextAnim("pass: ********", 8000, 40);
-		consoleTextAnim("code breaker active", 10000, 40);
-		consoleTextAnim("", 12800, 40);
+//		if(server)consoleTextAnim("opponent plays first.", 2000, 40);
+//		else consoleTextAnim("you play first.", 2000, 40);
 	}
 
 	//Random Digits Generator
@@ -1646,8 +1895,8 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 
 			//Switch Turns between server and joiner
 			if(cont) {
-				if (server) fb.child("turn").setValue("joiner");
-				else fb.child("turn").setValue("server");
+				if (server&&fb!=null) fb.child("turn").setValue("joiner");
+				else if(!server&&fb!=null) fb.child("turn").setValue("server");
 			}
 		}
 
@@ -1747,12 +1996,12 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 
 		//Update FireBase
 		if(server) {
-			fb.child("server_bulls").setValue(bulls);
-			fb.child("server_cows").setValue(cows);
+			if(fb!=null)fb.child("server_bulls").setValue(bulls);
+			if(fb!=null)fb.child("server_cows").setValue(cows);
 		}
 		else{
-			fb.child("joiner_bulls").setValue(bulls);
-			fb.child("joiner_cows").setValue(cows);
+			if(fb!=null)fb.child("joiner_bulls").setValue(bulls);
+			if(fb!=null)fb.child("joiner_cows").setValue(cows);
 		}
 	}
 
@@ -1768,19 +2017,19 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 		//Update highscore if valid
 		if (leastMoves > feed_count) {
 			ed.putInt("highscore", feed_count);
-			consoleTextAnim("This is your best yet!", 100, 20);
+//			consoleTextAnim("This is your best yet!", 100, 20);
 			ed.commit();
 		} else {
-			consoleTextAnim("Warhead disarmed!", 100, 20);
+//			consoleTextAnim("Warhead disarmed!", 100, 20);
 		}
 
 		//Display messages & animations
-		String st = "You made " + String.valueOf(feed_count + " moves.");
-		consoleTextAnim(st, 3500, 40);
-		consoleTextAnim("Good job Agent B!", 6000, 40);
-		consoleTextAnim("Sending extraction.", 8000, 40);
-		consoleTextAnim("", 16000, 40);
-		animateIcon(i_scores);
+//		String st = "You made " + String.valueOf(feed_count + " moves.");
+//		consoleTextAnim(st, 3500, 40);
+//		consoleTextAnim("Good job Agent B!", 6000, 40);
+//		consoleTextAnim("Sending extraction.", 8000, 40);
+//		consoleTextAnim("", 16000, 40);
+//		animateIcon(i_scores);
 
 		// Get date and time
 		Calendar c = Calendar.getInstance();
@@ -1854,13 +2103,13 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 
 		//Update FireBase
 		if(server) {
-			fb.child("winner").setValue("server");
+			if(fb!=null)fb.child("winner").setValue("server");
 		}
 		else{
-			fb.child("winner").setValue("joiner");
+			if(fb!=null)fb.child("winner").setValue("joiner");
 		}
 
-		fb.child("winner_moves").setValue(feed_count);
+		if(fb!=null)fb.child("winner_moves").setValue(feed_count);
 
 	}
 
@@ -1888,16 +2137,18 @@ public class MultiPlayerActivity extends Activity implements SimpleGestureListen
 		TextView replay = (TextView) multiplayer_gameover_dialog.findViewById(R.id.replay);
 		game_status.setTextColor(Color.parseColor(bg[bg_index]));
 
-		if(status.equals("won"))
-		{
+		if(status.equals("won")){
 			game_status.setText("Victory!");
 			winner_moves.setText("You dit it in " + feed_count + " moves.");
 		}
-		else
-
-		{
+		else if(status.equals("lost")){
 			winner_moves.setText("That was disappointing.");
 			game_status.setText("Defeat!");
+		}
+		else if(status.equals("opponent_left")){
+			game_status.setText("Opponent Left!");
+			winner_moves.setText("Hmm! We have a runner!");
+			replay.setVisibility(View.GONE);
 		}
 
 

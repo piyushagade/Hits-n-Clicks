@@ -22,7 +22,7 @@
             android:typeface="monospace"
             android:gravity="left"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/console_in"
+            android:layout_below="@+id/console"
             android:layout_above="@+id/rl_footerIcons"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
@@ -292,5 +292,10 @@
 
         <include layout="@layout/footer_icons_1"/>
     </RelativeLayout>
+
+    <include layout="@layout/chatbox"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

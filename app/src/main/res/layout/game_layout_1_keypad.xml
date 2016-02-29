@@ -23,15 +23,15 @@
             android:typeface="monospace"
             android:gravity="left"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/console_in"
-            android:layout_above="@+id/rl_footerIcons"
+            android:layout_below="@+id/console"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
-            android:padding="20dp"/>
+            android:padding="20dp"
+            android:layout_above="@+id/rl_keypad"/>
 
         <android.support.v7.widget.CardView
             android:id="@+id/console"
@@ -435,6 +435,12 @@
             </LinearLayout>
         </RelativeLayout>
 
+
     </RelativeLayout>
+
+    <include layout="@layout/chatbox"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
