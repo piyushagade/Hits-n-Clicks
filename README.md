@@ -16,37 +16,17 @@ A game is available on Google Play:
 Screenshots
 -----------
 
-| IntroActivity | UniClip Main Screen | User Info | Running Screen |
+| Game Menu | Dark Theme | Light Theme: Slider | Light Theme: Keypad |
 |:-:|:-:|:-:|:-:|
-| ![IntroActivity][12] | ![UniClip Main Screen][13] | ![User Info][14] | ![Running Screen][15] |
-| [_IntroActivity_] | [_Main UI_] | [_User Info_] | [_Running Screen_] |
+| ![Game Menu][12] | ![Dark Theme][13] | ![Light Theme: Slider][14] | ![Light Theme: Keypad][15] |
+| [_Game Menu_] | [_Dark Theme_] | [_Light Theme: Slider_] | [_Light Theme: Keypad_] |
 
-
-
-Changes
--------
-
-* **Version 1.0:**
-    * Bug fixes
-    * IntroActivity on first run
-    * Added menu drawer
-    * Added Clipboard history
-* **Version 1.1:**
-    * Added Notification, Vibrate control
-    * Added Light/Dark theme
-
-Open source libraries
--------
-
-*material-intro* uses the following open source files:
-
-* [Material Intro][5] by [@HeinrichReimer][6]
 
 
 [5]: https://github.com/piyushagade/material-intro
 [6]: https://github.com/HeinrichReimer
 
-[12]: http://i.imgur.com/JaTbpka.png
-[13]: http://i.imgur.com/Zm04vKH.png
-[14]: http://i.imgur.com/62BYx6M.png
-[15]: http://i.imgur.com/97woBUD.png
+[12]: http://i.imgur.com/16KAmmt.png
+[13]: http://i.imgur.com/jlraAwe.png
+[14]: http://i.imgur.com/Ac9uCbv.png
+[15]: http://i.imgur.com/drzGrE7.png
