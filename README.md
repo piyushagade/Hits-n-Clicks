@@ -7,7 +7,7 @@ Hits 'n Clicks is an enhanced version of Cows and Bulls game. The game is availa
 
 Play Store
 ----
-A game is available on Google Play:
+The game is available on Google Play:
 
 <a href="https://play.google.com/store/apps/details?id=com.jp.cowsnbulls">
 	<img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="60" />
